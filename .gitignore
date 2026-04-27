@@ -1,0 +1,6 @@
+WDB/
+Logs/
+Crash Logs/
+*.log
+*.tmp
+*.bak
