@@ -1,0 +1,457 @@
+{
+  "kind": "vmangos-client-patch-bundle",
+  "created_at": "2026-05-05T11:00:15+0200",
+  "patch": {
+    "file": "patch-Z.MPQ",
+    "bytes": 20571360,
+    "sha256": "dc737a7b2572c6b84c1f40ed3fe896e64ff64ac7528a0e4c856f1adc6be35bc7"
+  },
+  "source": {
+    "dbc_tools": "C:\\Users\\fogen\\vmangos-dbc-inspect",
+    "builder": "C:\\Users\\fogen\\vmangos-dbc-inspect\\build_client_patch_mpq.py",
+    "used_existing_mpq": null
+  },
+  "install": {
+    "target": "WoW 1.12.1 Data folder",
+    "download_base_url": "https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current",
+    "notes": [
+      "Close WoW before installing.",
+      "Players only need install-client-patch.bat; it downloads patch-Z.MPQ from the repo.",
+      "Delete WDB if cached item/spell text looks stale."
+    ]
+  },
+  "expected_archive_files": [
+    {
+      "archive_path": "DBFilesClient\\Spell.dbc",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\Spell.patched.dbc",
+      "source_repo_path": "vmangos-dbc-inspect\\Spell.patched.dbc",
+      "group": "core",
+      "exists": true,
+      "bytes": 16371604,
+      "sha256": "81abe5540c363fead4e94b018f3760a6931547751dca5dca2f28c6cf3f96ec54"
+    },
+    {
+      "archive_path": "DBFilesClient\\SkillLineAbility.dbc",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SkillLineAbility.patched.dbc",
+      "source_repo_path": "vmangos-dbc-inspect\\SkillLineAbility.patched.dbc",
+      "group": "core",
+      "exists": true,
+      "bytes": 304341,
+      "sha256": "48bd04ee6b88c51abcda7b1266d45899e9167ee39bff346f4e8e67f28dfafcc3"
+    },
+    {
+      "archive_path": "DBFilesClient\\SpellItemEnchantment.dbc",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SpellItemEnchantment.patched.dbc",
+      "source_repo_path": "vmangos-dbc-inspect\\SpellItemEnchantment.patched.dbc",
+      "group": "core",
+      "exists": true,
+      "bytes": 165279,
+      "sha256": "e128d26a5bef4bead8ce7a93ab53c13f9f3842223ee42d4407aec774a89d1c2c"
+    },
+    {
+      "archive_path": "DBFilesClient\\ItemDisplayInfo.dbc",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ItemDisplayInfo.patched.dbc",
+      "source_repo_path": "vmangos-dbc-inspect\\ItemDisplayInfo.patched.dbc",
+      "group": "core",
+      "exists": true,
+      "bytes": 3061598,
+      "sha256": "7224ede3ffa4f72bb57b8915d75fd742a87668b9e4e5e3801e8ce879ba2d5b23"
+    },
+    {
+      "archive_path": "DBFilesClient\\ItemVisuals.dbc",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ItemVisuals.patched.dbc",
+      "source_repo_path": "vmangos-dbc-inspect\\ItemVisuals.patched.dbc",
+      "group": "core",
+      "exists": true,
+      "bytes": 885,
+      "sha256": "51412691c251bda636c934116df05c3f0eaa8da23950e8580bb18ebee99cb86d"
+    },
+    {
+      "archive_path": "DBFilesClient\\ItemVisualEffects.dbc",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ItemVisualEffects.patched.dbc",
+      "source_repo_path": "vmangos-dbc-inspect\\ItemVisualEffects.patched.dbc",
+      "group": "core",
+      "exists": true,
+      "bytes": 1701,
+      "sha256": "dade7438e06f0d2b16ff9f2063c54ddb3be72802b5225634f7d55f501106b296"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\Sword_2H_Ashbringer02.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\Sword_2H_Ashbringer02.noparticles.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\Sword_2H_Ashbringer02.noparticles.m2",
+      "group": "core",
+      "exists": true,
+      "bytes": 45504,
+      "sha256": "8b9438424e95b50728a23be80a38ad86ae023c1018ad752717380413be293504"
+    },
+    {
+      "archive_path": "SPELLS\\VDB1.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__VDB1.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__VDB1.BLP",
+      "group": "texture",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "b7876598f797bfebd243f342d139bc2b9365244e437279a029217cc827d1204e"
+    },
+    {
+      "archive_path": "SPELLS\\VDB2.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__VDB2.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__VDB2.BLP",
+      "group": "texture",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "b7876598f797bfebd243f342d139bc2b9365244e437279a029217cc827d1204e"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\AMMO\\VDBLKGLOW.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__AMMO__VDBLKGLOW.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__AMMO__VDBLKGLOW.BLP",
+      "group": "texture",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "b7876598f797bfebd243f342d139bc2b9365244e437279a029217cc827d1204e"
+    },
+    {
+      "archive_path": "SPELLS\\VDBALL.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__VDBALL.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__VDBALL.BLP",
+      "group": "texture",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "cbc0038bd4fea63e612c0134bc709dea85ec92d2eee54c1e9cdcf2ebe9c84822"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VOIDBLADE01.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VOIDBLADE01.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VOIDBLADE01.BLP",
+      "group": "texture",
+      "exists": true,
+      "bytes": 12108,
+      "sha256": "e796173befd87511890dcc1bc7895bd6d144e7bf14805f997fb912954402995e"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\ASHBRINGER02.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__ASHBRINGER02.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__ASHBRINGER02.BLP",
+      "group": "texture",
+      "exists": true,
+      "bytes": 23036,
+      "sha256": "ccf86c606ed1e2071dfeb7f3ca92deb19826db254ef4170675f71ad76436fa24"
+    },
+    {
+      "archive_path": "SPELLS\\VLDK.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__VLDK.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__VLDK.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "b7876598f797bfebd243f342d139bc2b9365244e437279a029217cc827d1204e"
+    },
+    {
+      "archive_path": "SPELLS\\VLPR.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__VLPR.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__VLPR.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "d93e1cdb96832d970fed6218b471cd3bb448bee4b62122b90b7c43359a4372e6"
+    },
+    {
+      "archive_path": "SPELLS\\VPED.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__VPED.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__VPED.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "4eb898b2628f7567240b9eb59b3dc20fa5b0cebdc9528693413279fc5b00246d"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40014.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40014.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40014.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "6b57cf0f226bdc154cec2a64d9fad9b112309eae567c9f01e33a4b31ab3299d4"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40014.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40014.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40014.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 42800,
+      "sha256": "df1d403e29b30345765f30042205acac8306b67f4efe20fc19b12d5e95338944"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40015.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40015.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40015.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "6b57cf0f226bdc154cec2a64d9fad9b112309eae567c9f01e33a4b31ab3299d4"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40015.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40015.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40015.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 26256,
+      "sha256": "07141f40d59e39e938b3900400048d2396bfe06dead0a8446b644aaf9b4cfe8e"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40016.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40016.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40016.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 6652,
+      "sha256": "8e289b0aef30a1a4c4fc34aaaf53bc1ab8d33d5fd959cfa011afc5a3c4418cee"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40016.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40016.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40016.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 49248,
+      "sha256": "e2c6b94ae16dbb981c942fee3862dba6fdb6c6017a937e98693ecc00da2b38bc"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40017.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40017.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40017.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 23036,
+      "sha256": "2f25caf0339b14ab0d13fc15f7ae097eefeeeae4578f58fb0c932d914332d7d7"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40017.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40017.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40017.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 29168,
+      "sha256": "e94cfd5c8e1ff152ab360b556a197c58924fead9ae683a7e7bd94ba7b5efb6fd"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40018.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40018.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40018.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 23036,
+      "sha256": "6dfb72ce43cb51ee648965bd5a139bd24f70cac95149596de0c8fbcb2421d74f"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40018.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40018.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40018.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 31712,
+      "sha256": "027db73343860b636577726c772d9ea5e0cade204d5a72bce4963e2eff64a3e6"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40019.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40019.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40019.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "6b57cf0f226bdc154cec2a64d9fad9b112309eae567c9f01e33a4b31ab3299d4"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40019.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40019.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40019.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 26256,
+      "sha256": "017f8acfbda8e5ad35efea14c1cdbf88d4b71dd2dbf4a2a117c564aed9252f77"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40020.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40020.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40020.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 23036,
+      "sha256": "debbb9e32c650db23ee0817222a49600c5acc232dcaf6a8361cbf099f82287f5"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40020.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40020.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40020.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 51072,
+      "sha256": "3fe39212ad37600626ff5e0e253ad0b4af7814811f1e679452d46d5ba0783539"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40021.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40021.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40021.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 23036,
+      "sha256": "64807a84cc7cb094133524fe52048837a9ca1e82a2616021772041dbcc848598"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40021.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40021.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40021.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 30624,
+      "sha256": "9e9f242d5976e57c1818e6f2574019d1dc9025f9b81e74286038ad255c0388c3"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40022.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40022.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40022.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 6652,
+      "sha256": "4e48fedec256beaccf4ab11c571dc5e1b1fe43cd4622ab00db001ac712f1c3ba"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40022.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40022.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40022.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 9776,
+      "sha256": "b3f174a7a2e75e02b74f4e0c208707bf5c1afc0d6f39adfaba581dc06a1e7368"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40023.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40023.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40023.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 12108,
+      "sha256": "8ee91a6fc7eb95713537ba68cdc4aa249ea542af913c2c57fbcbd694cc36fe75"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40023.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40023.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40023.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 22352,
+      "sha256": "c72741bf1ed4fdf7aa7eb8fb09c353274b849b1bae9fee3a9db1dbfb098c5a37"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40024.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40024.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40024.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 23036,
+      "sha256": "fefc46ce974062e81ae45f5d41b9a6cf8723e360b8108a13f07da7786e9b13eb"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40024.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40024.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40024.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 20048,
+      "sha256": "d8b6dbd65d71cb807b0f513bcc857abe7974fedbdb1d314191d5b8d57739777c"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40025.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40025.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40025.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 6652,
+      "sha256": "4986cfab949ad3e365bd5d3b4d2ed164fb6197071f7a2cbc04d6ec1287647af9"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40025.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40025.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40025.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 11968,
+      "sha256": "301757e33234f758c6e1482c9e5b1583a1e97fb3e6ae52ac14c855b00eb1531d"
+    },
+    {
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40026.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40026.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40026.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 6652,
+      "sha256": "5eb36e656c813233da0ba0d47d011909d64dd69e3f9fc26346d707ce96e8266c"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40026.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40026.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40026.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 17024,
+      "sha256": "ded718ca8b3a5b16a5e688e3033f1c3db83eb433eb5e3dce7c1c348bfa45fdd6"
+    },
+    {
+      "archive_path": "Spells\\Enchantments\\VoidBladeGlow.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VoidBladeGlow.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VoidBladeGlow.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 2704,
+      "sha256": "1696deed1b6ed09e7667ebcd1cdd799303702ddd7e33f09e4d009b36e04bba0c"
+    },
+    {
+      "archive_path": "Spells\\Enchantments\\VoidBladeGlow.mdx",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VoidBladeGlow.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VoidBladeGlow.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 2704,
+      "sha256": "1696deed1b6ed09e7667ebcd1cdd799303702ddd7e33f09e4d009b36e04bba0c"
+    },
+    {
+      "archive_path": "SPELLS\\VBG.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__VBG.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__VBG.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "0168d7ae0941c906d3f9ab3b9da3f18ec09307f8a6208bafdd5fa668f401a14a"
+    },
+    {
+      "archive_path": "Spells\\Enchantments\\PerditionLifeCells.mdx",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\PerditionLifeCells.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\PerditionLifeCells.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 2704,
+      "sha256": "572d52010fcf0956139ba33dc471a1ce927b5cf80e60635e80e8e2414e01db0c"
+    },
+    {
+      "archive_path": "Spells\\Enchantments\\PerditionLifeCells.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\PerditionLifeCells.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\PerditionLifeCells.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 2704,
+      "sha256": "572d52010fcf0956139ba33dc471a1ce927b5cf80e60635e80e8e2414e01db0c"
+    },
+    {
+      "archive_path": "SPELLS\\PCEL.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__PCEL.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__PCEL.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "22fb341960a4abd04d4293ca2415e50a318044ac5f850a91d4031c228f722d7a"
+    }
+  ]
+}

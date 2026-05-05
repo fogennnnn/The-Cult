@@ -1,6 +1,8 @@
 WDB/
 Logs/
 Crash Logs/
+__pycache__/
+patches/releases/
 *.log
 *.tmp
 *.bak
