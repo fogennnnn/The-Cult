@@ -37,19 +37,113 @@ local function insertIntoChat(text)
   return true
 end
 
-local function tryOpenHelpTicket()
-  if type(ToggleHelpFrame) == "function" then
+local function lowerSafe(value)
+  if not value then
+    return ""
+  end
+  return string.lower(tostring(value))
+end
+
+local function tryFillTicketText(text)
+  if not text or text == "" then
+    return false
+  end
+  if not (GMTicketText and GMTicketText.SetText and GMTicketText.IsVisible and GMTicketText:IsVisible()) then
+    return false
+  end
+  pcall(function()
+    GMTicketText:SetText(text)
+    GMTicketText:SetFocus()
+    if GMTicketText.HighlightText then
+      GMTicketText:HighlightText()
+    end
+  end)
+  return true
+end
+
+local function isGMIssuesButtonText(text)
+  local t = lowerSafe(text)
+  return string.find(t, "issues that gms can assist with", 1, true)
+    or string.find(t, "issues that gm", 1, true)
+    or string.find(t, "can assist with", 1, true)
+end
+
+local function clickIssuesButtonRecursive(root, depth)
+  if not root or depth > 5 or not root.GetChildren then
+    return false
+  end
+  local children = { root:GetChildren() }
+  local childCount = table.getn(children)
+  local i
+  for i = 1, childCount do
+    local child = children[i]
+    if child and child.IsVisible and child:IsVisible() then
+      if child.GetText and child.Click then
+        local ok, text = pcall(child.GetText, child)
+        if ok and text and isGMIssuesButtonText(text) then
+          pcall(child.Click, child)
+          return true
+        end
+      end
+      if clickIssuesButtonRecursive(child, depth + 1) then
+        return true
+      end
+    end
+  end
+  return false
+end
+
+local function advanceHelpFrame()
+  if type(ToggleHelpFrame) == "function" and not (HelpFrame and HelpFrame.IsVisible and HelpFrame:IsVisible()) then
     pcall(ToggleHelpFrame)
   end
   if type(HelpFrame_OpenTicket) == "function" then
     pcall(HelpFrame_OpenTicket)
   end
-  if GMTicketText and GMTicketText.SetText and CultRedeem_Char and CultRedeem_Char.lastTicketText then
-    pcall(function()
-      GMTicketText:SetText(CultRedeem_Char.lastTicketText)
-      GMTicketText:SetFocus()
-    end)
+  if HelpFrame and HelpFrame.IsVisible and HelpFrame:IsVisible() then
+    clickIssuesButtonRecursive(HelpFrame, 0)
   end
+end
+
+local redeemFillRunner = CreateFrame("Frame")
+redeemFillRunner:SetScript("OnUpdate", function()
+  local elapsed = arg1 or 0
+  local state = CultRedeem_Char and CultRedeem_Char.pendingFill
+  if not state or not state.text then
+    return
+  end
+  state.elapsed = (state.elapsed or 0) + elapsed
+  if state.elapsed < 0.12 then
+    return
+  end
+  state.elapsed = 0
+  state.tries = (state.tries or 0) + 1
+
+  if tryFillTicketText(state.text) then
+    CultRedeem_Char.pendingFill = nil
+    msg("Ticket text inserted. Press Submit.", 0.6, 1.0, 0.6)
+    return
+  end
+
+  advanceHelpFrame()
+
+  if state.tries >= 80 then
+    CultRedeem_Char.pendingFill = nil
+    msg("Could not auto-fill ticket box. Paste this manually:", 1.0, 0.85, 0.45)
+    msg(state.text, 1.0, 0.85, 0.45)
+  end
+end)
+
+local function startTicketFill(text)
+  if not CultRedeem_Char then
+    CultRedeem_Char = {}
+  end
+  CultRedeem_Char.pendingFill = {
+    text = text,
+    tries = 0,
+    elapsed = 0,
+  }
+  advanceHelpFrame()
 end
 
 local function showUsage()
@@ -70,10 +164,10 @@ local function handleRedeemCommand(input)
   CultRedeem_Char.lastTicketText = ticketText
 
   insertIntoChat(ticketText)
-  tryOpenHelpTicket()
+  startTicketFill(ticketText)
 
   msg("Prepared: " .. ticketText, 0.6, 1.0, 0.6)
-  msg("Submit this text in a GM ticket if it is not already filled.", 0.6, 1.0, 0.6)
+  msg("Opening GM ticket and inserting text...", 0.6, 1.0, 0.6)
 end
 
 SLASH_CULTREDEEM1 = "/redeem"
