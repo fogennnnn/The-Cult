@@ -68,6 +68,61 @@ local function isGMIssuesButtonText(text)
     or string.find(t, "can assist with", 1, true)
 end
 
+local function isCategoryText(text)
+  local t = lowerSafe(text)
+  if t == "" then
+    return false
+  end
+  if t == "back" or t == "cancel" then
+    return false
+  end
+  return t == "technical"
+    or t == "character"
+    or t == "item"
+    or t == "account/billing"
+    or t == "environmental"
+    or t == "quest/quest npc"
+    or t == "non-quest/creep"
+    or t == "stuck"
+    or t == "guild"
+    or t == "behavior/harassment"
+end
+
+local function categoryRank(text)
+  local t = lowerSafe(text)
+  if t == "technical" then
+    return 1
+  end
+  if t == "character" then
+    return 2
+  end
+  if t == "item" then
+    return 3
+  end
+  if t == "account/billing" then
+    return 4
+  end
+  if t == "environmental" then
+    return 5
+  end
+  if t == "quest/quest npc" then
+    return 6
+  end
+  if t == "non-quest/creep" then
+    return 7
+  end
+  if t == "stuck" then
+    return 8
+  end
+  if t == "guild" then
+    return 9
+  end
+  if t == "behavior/harassment" then
+    return 10
+  end
+  return 999
+end
+
 local function clickIssuesButtonRecursive(root, depth)
   if not root or depth > 5 or not root.GetChildren then
     return false
@@ -93,6 +148,40 @@ local function clickIssuesButtonRecursive(root, depth)
   return false
 end
 
+local function findBestCategoryButton(root, depth, best)
+  if not root or depth > 7 or not root.GetChildren then
+    return best
+  end
+  local children = { root:GetChildren() }
+  local childCount = table.getn(children)
+  local i
+  for i = 1, childCount do
+    local child = children[i]
+    if child and child.IsVisible and child:IsVisible() then
+      if child.GetText and child.Click then
+        local ok, text = pcall(child.GetText, child)
+        if ok and text and isCategoryText(text) then
+          local rank = categoryRank(text)
+          if (not best) or rank < best.rank then
+            best = { frame = child, rank = rank }
+          end
+        end
+      end
+      best = findBestCategoryButton(child, depth + 1, best)
+    end
+  end
+  return best
+end
+
+local function clickBestCategoryButton(root)
+  local best = findBestCategoryButton(root, 0, nil)
+  if not best or not best.frame then
+    return false
+  end
+  pcall(best.frame.Click, best.frame)
+  return true
+end
+
 local function advanceHelpFrame()
   if type(ToggleHelpFrame) == "function" and not (HelpFrame and HelpFrame.IsVisible and HelpFrame:IsVisible()) then
     pcall(ToggleHelpFrame)
@@ -101,7 +190,9 @@ local function advanceHelpFrame()
     pcall(HelpFrame_OpenTicket)
   end
   if HelpFrame and HelpFrame.IsVisible and HelpFrame:IsVisible() then
-    clickIssuesButtonRecursive(HelpFrame, 0)
+    if not clickIssuesButtonRecursive(HelpFrame, 0) then
+      clickBestCategoryButton(HelpFrame)
+    end
   end
 end
 
