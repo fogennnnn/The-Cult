@@ -6,6 +6,9 @@ set "MANIFEST_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/pa
 set "PATCH_SHA256=DC737A7B2572C6B84C1F40ED3FE896E64FF64AC7528A0E4C856F1ADC6BE35BC7"
 set "PATCH_BYTES=20571360"
 set "PATCH_NAME=patch-Z.MPQ"
+set "ADDON_NAME=CultRedeem"
+set "ADDON_TOC_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/addons/CultRedeem/CultRedeem.toc"
+set "ADDON_LUA_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/addons/CultRedeem/CultRedeem.lua"
 
 call :ShowIntro
 echo VMaNGOS one-file client patch installer
@@ -134,6 +137,26 @@ echo Installed %PATCH_NAME%.
 echo.
 echo Final tip: if tooltips, item names, or spell text look stale, close WoW and delete:
 echo   the WDB folder beside WoW.exe
+echo.
+echo Installing player addon %ADDON_NAME%...
+set "WOWROOT=%WOWDATA%\.."
+set "ADDONDIR=%WOWROOT%\Interface\AddOns\%ADDON_NAME%"
+if not exist "%ADDONDIR%" mkdir "%ADDONDIR%" >NUL 2>NUL
+if errorlevel 1 (
+    echo WARNING: Could not create addon folder:
+    echo   %ADDONDIR%
+    goto Finish
+)
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri $env:ADDON_TOC_URL -OutFile ($env:ADDONDIR + '\CultRedeem.toc') -UseBasicParsing; Invoke-WebRequest -Uri $env:ADDON_LUA_URL -OutFile ($env:ADDONDIR + '\CultRedeem.lua') -UseBasicParsing"
+if errorlevel 1 (
+    echo WARNING: Addon download failed. Patch is installed, but addon was skipped.
+    echo You can re-run later or install addon manually into Interface\AddOns\%ADDON_NAME%.
+    goto Finish
+)
+echo Installed addon: %ADDON_NAME%
+
+:Finish
 echo.
 pause
 exit /b 0

@@ -26,8 +26,11 @@ DEFAULT_DBC_TOOLS = REPO_ROOT.parent / "vmangos-dbc-inspect"
 DEFAULT_RELEASE_DIR = REPO_ROOT / "patches" / "releases"
 DEFAULT_CURRENT_DIR = REPO_ROOT / "patches" / "current"
 DEFAULT_PLAYER_SCRIPT = REPO_ROOT / "install-client-patch.bat"
+DEFAULT_ADDON_SOURCE_DIR = REPO_ROOT / "addons"
 
 PATCH_NAME = "patch-Z.MPQ"
+PLAYER_ADDON_NAME = "CultRedeem"
+PLAYER_ADDON_FILES = ["CultRedeem.toc", "CultRedeem.lua"]
 
 BASE_ARCHIVE_FILES = [
     ("Spell.patched.dbc", "DBFilesClient\\Spell.dbc"),
@@ -155,6 +158,9 @@ def write_text_files(release_dir: Path, patch_file: Path, manifest: dict, downlo
     patch_bytes = manifest["patch"]["bytes"]
     patch_url = f"{download_base_url.rstrip('/')}/{PATCH_NAME}" if download_base_url else ""
     manifest_url = f"{download_base_url.rstrip('/')}/manifest.json" if download_base_url else ""
+    addon_base_url = f"{download_base_url.rstrip('/')}/addons/{PLAYER_ADDON_NAME}" if download_base_url else ""
+    addon_toc_url = f"{addon_base_url}/CultRedeem.toc" if addon_base_url else ""
+    addon_lua_url = f"{addon_base_url}/CultRedeem.lua" if addon_base_url else ""
 
     installer = f"""@echo off
 setlocal EnableExtensions EnableDelayedExpansion
@@ -164,6 +170,9 @@ set "MANIFEST_URL={manifest_url}"
 set "PATCH_SHA256={patch_hash.upper()}"
 set "PATCH_BYTES={patch_bytes}"
 set "PATCH_NAME={PATCH_NAME}"
+set "ADDON_NAME={PLAYER_ADDON_NAME}"
+set "ADDON_TOC_URL={addon_toc_url}"
+set "ADDON_LUA_URL={addon_lua_url}"
 
 call :ShowIntro
 echo VMaNGOS one-file client patch installer
@@ -293,6 +302,26 @@ echo.
 echo Final tip: if tooltips, item names, or spell text look stale, close WoW and delete:
 echo   the WDB folder beside WoW.exe
 echo.
+echo Installing player addon %ADDON_NAME%...
+set "WOWROOT=%WOWDATA%\.."
+set "ADDONDIR=%WOWROOT%\Interface\AddOns\%ADDON_NAME%"
+if not exist "%ADDONDIR%" mkdir "%ADDONDIR%" >NUL 2>NUL
+if errorlevel 1 (
+    echo WARNING: Could not create addon folder:
+    echo   %ADDONDIR%
+    goto Finish
+)
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri $env:ADDON_TOC_URL -OutFile ($env:ADDONDIR + '\\CultRedeem.toc') -UseBasicParsing; Invoke-WebRequest -Uri $env:ADDON_LUA_URL -OutFile ($env:ADDONDIR + '\\CultRedeem.lua') -UseBasicParsing"
+if errorlevel 1 (
+    echo WARNING: Addon download failed. Patch is installed, but addon was skipped.
+    echo You can re-run later or install addon manually into Interface\AddOns\%ADDON_NAME%.
+    goto Finish
+)
+echo Installed addon: %ADDON_NAME%
+
+:Finish
+echo.
 pause
 exit /b 0
 
@@ -374,7 +403,56 @@ def publish_current(release_dir: Path, current_dir: Path, player_script: Path) -
         source = release_dir / name
         if source.exists():
             shutil.copy2(source, current_dir / name)
+    src_addons = release_dir / "addons"
+    dst_addons = current_dir / "addons"
+    if src_addons.exists():
+        if dst_addons.exists():
+            shutil.rmtree(dst_addons)
+        shutil.copytree(src_addons, dst_addons)
     shutil.copy2(release_dir / "install-client-patch.bat", player_script)
+
+
+def run_git_command(args: list[str]) -> str:
+    result = subprocess.run(
+        ["git", *args],
+        cwd=str(REPO_ROOT),
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    return (result.stdout or "").strip()
+
+
+def git_sync_publish_current(manifest: dict, label: str) -> None:
+    run_git_command(["add", "patches/current", "install-client-patch.bat"])
+    status = run_git_command(["status", "--porcelain", "--", "patches/current", "install-client-patch.bat"])
+    if not status:
+        print("git_publish=no_changes")
+        return
+
+    branch = git_output(["branch", "--show-current"]) or "master"
+    patch_hash = manifest.get("patch", {}).get("sha256", "")[:12]
+    clean_label = label.strip().replace(" ", "-") if label.strip() else "auto"
+    message = f"deploy client patch {clean_label} {patch_hash}".strip()
+    run_git_command(["commit", "-m", message])
+    run_git_command(["push", "origin", branch])
+    print(f"git_publish=ok branch={branch} commit_message={message}")
+
+
+def stage_player_addon(addon_source_dir: Path, release_dir: Path) -> list[str]:
+    source_dir = addon_source_dir / PLAYER_ADDON_NAME
+    if not source_dir.exists():
+        raise FileNotFoundError(source_dir)
+    destination = release_dir / "addons" / PLAYER_ADDON_NAME
+    destination.mkdir(parents=True, exist_ok=True)
+    copied: list[str] = []
+    for file_name in PLAYER_ADDON_FILES:
+        src = source_dir / file_name
+        if not src.exists():
+            raise FileNotFoundError(src)
+        shutil.copy2(src, destination / file_name)
+        copied.append(str((destination / file_name).relative_to(release_dir)).replace("\\", "/"))
+    return copied
 
 
 def write_zip(release_dir: Path, zip_path: Path) -> None:
@@ -396,8 +474,10 @@ def main() -> int:
     parser.add_argument("--no-zip", action="store_true", help="Do not create a zip wrapper.")
     parser.add_argument("--download-base-url", default="", help="Base URL containing patch-Z.MPQ and manifest.json.")
     parser.add_argument("--publish-current", action="store_true", help="Refresh patches/current and root installer script.")
+    parser.add_argument("--no-git-push", action="store_true", help="Do not auto commit/push when publishing current patch.")
     parser.add_argument("--current-dir", default=str(DEFAULT_CURRENT_DIR), help="Repo path for stable current patch files.")
     parser.add_argument("--player-script", default=str(DEFAULT_PLAYER_SCRIPT), help="Standalone player installer .bat path.")
+    parser.add_argument("--addon-source-dir", default=str(DEFAULT_ADDON_SOURCE_DIR), help="Path containing addon source folders.")
     args = parser.parse_args()
 
     dbc_tools = Path(args.dbc_tools)
@@ -405,6 +485,7 @@ def main() -> int:
         raise FileNotFoundError(dbc_tools)
     current_dir = Path(args.current_dir)
     player_script = Path(args.player_script)
+    addon_source_dir = Path(args.addon_source_dir)
     download_base_url = args.download_base_url.strip()
     if not download_base_url:
         download_base_url = default_download_base_url(current_dir)
@@ -458,9 +539,16 @@ def main() -> int:
     }
 
     write_text_files(release_dir, patch_file, manifest, download_base_url)
+    addon_files = stage_player_addon(addon_source_dir, release_dir)
+    manifest["player_addon"] = {
+        "name": PLAYER_ADDON_NAME,
+        "files": addon_files,
+    }
     (release_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     if args.publish_current:
         publish_current(release_dir, current_dir, player_script)
+        if not args.no_git_push:
+            git_sync_publish_current(manifest, args.label)
 
     zip_path = release_dir.with_suffix(".zip")
     if not args.no_zip:

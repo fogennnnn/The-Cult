@@ -1,0 +1,7 @@
+## Interface: 11200
+## Title: CultRedeem
+## Notes: Claim-code helper for The Cult gold redemption
+## Author: The Cult
+## Version: 1.0.0
+## SavedVariablesPerCharacter: CultRedeem_Char
+CultRedeem.lua

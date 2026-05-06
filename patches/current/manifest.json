@@ -1,6 +1,6 @@
 {
   "kind": "vmangos-client-patch-bundle",
-  "created_at": "2026-05-05T11:00:15+0200",
+  "created_at": "2026-05-07T01:02:39+0200",
   "patch": {
     "file": "patch-Z.MPQ",
     "bytes": 20571360,
@@ -9,7 +9,7 @@
   "source": {
     "dbc_tools": "C:\\Users\\fogen\\vmangos-dbc-inspect",
     "builder": "C:\\Users\\fogen\\vmangos-dbc-inspect\\build_client_patch_mpq.py",
-    "used_existing_mpq": null
+    "used_existing_mpq": ".\\patches\\current\\patch-Z.MPQ"
   },
   "install": {
     "target": "WoW 1.12.1 Data folder",
@@ -453,5 +453,12 @@
       "bytes": 3916,
       "sha256": "22fb341960a4abd04d4293ca2415e50a318044ac5f850a91d4031c228f722d7a"
     }
-  ]
+  ],
+  "player_addon": {
+    "name": "CultRedeem",
+    "files": [
+      "addons/CultRedeem/CultRedeem.toc",
+      "addons/CultRedeem/CultRedeem.lua"
+    ]
+  }
 }
