@@ -1,10 +1,10 @@
 {
   "kind": "vmangos-client-patch-bundle",
-  "created_at": "2026-05-07T17:58:28+0200",
+  "created_at": "2026-05-07T18:13:38+0200",
   "patch": {
     "file": "patch-Z.MPQ",
-    "bytes": 20576679,
-    "sha256": "e91b6e51686b229e189a513f00d3a6e995528ef2c6b26a4daa0e08cd97ea3eb3"
+    "bytes": 20559350,
+    "sha256": "b44f61b6b245a9c0e2b21a9e41fba9d36fd4a1a2b6209a9ee2f475920d48c706"
   },
   "source": {
     "dbc_tools": "C:\\Users\\fogen\\vmangos-dbc-inspect",
@@ -55,7 +55,7 @@
       "group": "core",
       "exists": true,
       "bytes": 3061712,
-      "sha256": "8eac28045aa2fabedad24d5cb03ca0688ed6736bde9c479df98b5350fca7f239"
+      "sha256": "3d311f7b7bd3d2ef7572233e7cdc6dc5972aec06bb71d451e5d26d9ceaf99a7c"
     },
     {
       "archive_path": "DBFilesClient\\ItemVisuals.dbc",
@@ -407,15 +407,6 @@
       "exists": true,
       "bytes": 6652,
       "sha256": "7c91365610962dfa6cb542232e3d704f24cacc018e51f4afad4e86aa1d75a97d"
-    },
-    {
-      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40027.m2",
-      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40027.m2",
-      "source_repo_path": "vmangos-dbc-inspect\\VLG40027.m2",
-      "group": "legendary_void",
-      "exists": true,
-      "bytes": 17312,
-      "sha256": "708de9c4d59b7e8c1d97a783e06883d3c71baa2250ceabd100ad1f1011cbf8df"
     }
   ],
   "player_addon": {
