@@ -44,7 +44,7 @@ end
 
 local panel = CreateFrame("Frame", "CultHemoPanel", UIParent)
 panel:SetWidth(360)
-panel:SetHeight(182)
+panel:SetHeight(214)
 panel:SetMovable(true)
 panel:EnableMouse(true)
 panel:RegisterForDrag("LeftButton")
@@ -99,10 +99,14 @@ lineMirror:SetText("Server mirror: account gold -> HEMO, continuous reconcile.")
 
 local lineInterval = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 lineInterval:SetPoint("TOPLEFT", lineMirror, "BOTTOMLEFT", 0, -8)
-lineInterval:SetText("Target latency: a few seconds (depends on server save cadence).")
+lineInterval:SetWidth(330)
+lineInterval:SetJustifyH("LEFT")
+lineInterval:SetText("Target latency: a few seconds.")
 
 local lineCmd = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-lineCmd:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 14, 14)
+lineCmd:SetPoint("TOPLEFT", lineInterval, "BOTTOMLEFT", 0, -8)
+lineCmd:SetWidth(330)
+lineCmd:SetJustifyH("LEFT")
 lineCmd:SetText("/hemo toggle panel   /hemostat chat snapshot")
 
 local state = {

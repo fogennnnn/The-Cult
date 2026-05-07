@@ -1,15 +1,15 @@
 {
   "kind": "vmangos-client-patch-bundle",
-  "created_at": "2026-05-07T01:12:58+0200",
+  "created_at": "2026-05-07T17:58:28+0200",
   "patch": {
     "file": "patch-Z.MPQ",
-    "bytes": 20571360,
-    "sha256": "dc737a7b2572c6b84c1f40ed3fe896e64ff64ac7528a0e4c856f1adc6be35bc7"
+    "bytes": 20576679,
+    "sha256": "e91b6e51686b229e189a513f00d3a6e995528ef2c6b26a4daa0e08cd97ea3eb3"
   },
   "source": {
     "dbc_tools": "C:\\Users\\fogen\\vmangos-dbc-inspect",
     "builder": "C:\\Users\\fogen\\vmangos-dbc-inspect\\build_client_patch_mpq.py",
-    "used_existing_mpq": ".\\patches\\current\\patch-Z.MPQ"
+    "used_existing_mpq": null
   },
   "install": {
     "target": "WoW 1.12.1 Data folder",
@@ -54,8 +54,8 @@
       "source_repo_path": "vmangos-dbc-inspect\\ItemDisplayInfo.patched.dbc",
       "group": "core",
       "exists": true,
-      "bytes": 3061598,
-      "sha256": "7224ede3ffa4f72bb57b8915d75fd742a87668b9e4e5e3801e8ce879ba2d5b23"
+      "bytes": 3061712,
+      "sha256": "8eac28045aa2fabedad24d5cb03ca0688ed6736bde9c479df98b5350fca7f239"
     },
     {
       "archive_path": "DBFilesClient\\ItemVisuals.dbc",
@@ -400,58 +400,22 @@
       "sha256": "ded718ca8b3a5b16a5e688e3033f1c3db83eb433eb5e3dce7c1c348bfa45fdd6"
     },
     {
-      "archive_path": "Spells\\Enchantments\\VoidBladeGlow.m2",
-      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VoidBladeGlow.m2",
-      "source_repo_path": "vmangos-dbc-inspect\\VoidBladeGlow.m2",
+      "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VLG40027.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40027.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__VLG40027.BLP",
       "group": "legendary_void",
       "exists": true,
-      "bytes": 2704,
-      "sha256": "1696deed1b6ed09e7667ebcd1cdd799303702ddd7e33f09e4d009b36e04bba0c"
+      "bytes": 6652,
+      "sha256": "7c91365610962dfa6cb542232e3d704f24cacc018e51f4afad4e86aa1d75a97d"
     },
     {
-      "archive_path": "Spells\\Enchantments\\VoidBladeGlow.mdx",
-      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VoidBladeGlow.m2",
-      "source_repo_path": "vmangos-dbc-inspect\\VoidBladeGlow.m2",
+      "archive_path": "Item\\ObjectComponents\\Weapon\\VLG40027.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\VLG40027.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\VLG40027.m2",
       "group": "legendary_void",
       "exists": true,
-      "bytes": 2704,
-      "sha256": "1696deed1b6ed09e7667ebcd1cdd799303702ddd7e33f09e4d009b36e04bba0c"
-    },
-    {
-      "archive_path": "SPELLS\\VBG.BLP",
-      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__VBG.BLP",
-      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__VBG.BLP",
-      "group": "legendary_void",
-      "exists": true,
-      "bytes": 3916,
-      "sha256": "0168d7ae0941c906d3f9ab3b9da3f18ec09307f8a6208bafdd5fa668f401a14a"
-    },
-    {
-      "archive_path": "Spells\\Enchantments\\PerditionLifeCells.mdx",
-      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\PerditionLifeCells.m2",
-      "source_repo_path": "vmangos-dbc-inspect\\PerditionLifeCells.m2",
-      "group": "legendary_void",
-      "exists": true,
-      "bytes": 2704,
-      "sha256": "572d52010fcf0956139ba33dc471a1ce927b5cf80e60635e80e8e2414e01db0c"
-    },
-    {
-      "archive_path": "Spells\\Enchantments\\PerditionLifeCells.m2",
-      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\PerditionLifeCells.m2",
-      "source_repo_path": "vmangos-dbc-inspect\\PerditionLifeCells.m2",
-      "group": "legendary_void",
-      "exists": true,
-      "bytes": 2704,
-      "sha256": "572d52010fcf0956139ba33dc471a1ce927b5cf80e60635e80e8e2414e01db0c"
-    },
-    {
-      "archive_path": "SPELLS\\PCEL.BLP",
-      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__PCEL.BLP",
-      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__PCEL.BLP",
-      "group": "legendary_void",
-      "exists": true,
-      "bytes": 3916,
-      "sha256": "22fb341960a4abd04d4293ca2415e50a318044ac5f850a91d4031c228f722d7a"
+      "bytes": 17312,
+      "sha256": "708de9c4d59b7e8c1d97a783e06883d3c71baa2250ceabd100ad1f1011cbf8df"
     }
   ],
   "player_addon": {
