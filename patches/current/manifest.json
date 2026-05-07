@@ -1,6 +1,6 @@
 {
   "kind": "vmangos-client-patch-bundle",
-  "created_at": "2026-05-07T18:13:38+0200",
+  "created_at": "2026-05-07T20:53:26+0200",
   "patch": {
     "file": "patch-Z.MPQ",
     "bytes": 20559350,

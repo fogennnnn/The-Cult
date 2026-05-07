@@ -3,6 +3,12 @@ local ADDON_TAG = "|cff8ad3ff[CultHEMO]|r "
 if not CultRedeem_Char then
   CultRedeem_Char = {}
 end
+if not CultRedeem_DB then
+  CultRedeem_DB = {}
+end
+if not CultRedeem_DB.charMoney then
+  CultRedeem_DB.charMoney = {}
+end
 
 local function msg(text, r, g, b)
   DEFAULT_CHAT_FRAME:AddMessage(ADDON_TAG .. text, r or 1, g or 1, b or 1)
@@ -17,6 +23,30 @@ local function moneyText(copper)
   local silver = math.floor(math.mod(copper, 10000) / 100)
   local coin = math.mod(copper, 100)
   return string.format("%dg %ds %dc", gold, silver, coin)
+end
+
+local function realmNameSafe()
+  return GetRealmName() or "UnknownRealm"
+end
+
+local function charKey()
+  return realmNameSafe() .. "|" .. (UnitName("player") or "Unknown")
+end
+
+local function updateCharSnapshot(money)
+  local key = charKey()
+  CultRedeem_DB.charMoney[key] = tonumber(money or 0) or 0
+end
+
+local function accountMoneyEstimate()
+  local total = 0
+  local realm = realmNameSafe() .. "|"
+  for key, value in pairs(CultRedeem_DB.charMoney) do
+    if string.find(key, realm, 1, true) == 1 then
+      total = total + (tonumber(value or 0) or 0)
+    end
+  end
+  return total
 end
 
 local function saveFramePos(frame)
@@ -77,15 +107,15 @@ local hint = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 hint:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
 hint:SetJustifyH("LEFT")
 hint:SetWidth(320)
-hint:SetText("Live view from your character wallet. Drag window to move.")
+hint:SetText("Live view from your account estimate. Drag window to move.")
 
 local lineGold = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 lineGold:SetPoint("TOPLEFT", hint, "BOTTOMLEFT", 0, -16)
-lineGold:SetText("Gold: --")
+lineGold:SetText("Gold (char): --")
 
 local lineHemo = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 lineHemo:SetPoint("TOPLEFT", lineGold, "BOTTOMLEFT", 0, -8)
-lineHemo:SetText("HEMO (char est): --")
+lineHemo:SetText("HEMO (acct est): --")
 
 local lineDelta = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 lineDelta:SetPoint("TOPLEFT", lineHemo, "BOTTOMLEFT", 0, -8)
@@ -123,8 +153,10 @@ local function updateView()
     state.lastChangeAt = GetTime() or 0
   end
 
-  lineGold:SetText("Gold: " .. moneyText(money))
-  lineHemo:SetText(string.format("HEMO (char est): %.2f", money / 10000))
+  updateCharSnapshot(money)
+  local accountMoney = accountMoneyEstimate()
+  lineGold:SetText("Gold (char): " .. moneyText(money))
+  lineHemo:SetText(string.format("HEMO (acct est): %.2f", accountMoney / 10000))
 
   if state.lastChangeAt <= 0 then
     lineDelta:SetText("Last money change: --")
@@ -186,8 +218,11 @@ end
 SLASH_CULTHEMOSTAT1 = "/hemostat"
 SlashCmdList["CULTHEMOSTAT"] = function()
   local money = GetMoney() or 0
-  msg("Gold now: " .. moneyText(money), 0.7, 1.0, 0.8)
-  msg(string.format("HEMO (char est): %.2f", money / 10000), 0.7, 1.0, 0.8)
+  updateCharSnapshot(money)
+  local accountMoney = accountMoneyEstimate()
+  msg("Gold now (char): " .. moneyText(money), 0.7, 1.0, 0.8)
+  msg("Gold now (acct est): " .. moneyText(accountMoney), 0.7, 1.0, 0.8)
+  msg(string.format("HEMO (acct est): %.2f", accountMoney / 10000), 0.7, 1.0, 0.8)
   msg("Server mirror runs continuously and reconciles account balance.", 0.7, 1.0, 0.8)
 end
 
