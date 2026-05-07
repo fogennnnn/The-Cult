@@ -1,10 +1,10 @@
 {
   "kind": "vmangos-client-patch-bundle",
-  "created_at": "2026-05-07T20:53:26+0200",
+  "created_at": "2026-05-07T23:08:24+0200",
   "patch": {
     "file": "patch-Z.MPQ",
-    "bytes": 20559350,
-    "sha256": "b44f61b6b245a9c0e2b21a9e41fba9d36fd4a1a2b6209a9ee2f475920d48c706"
+    "bytes": 20568818,
+    "sha256": "2d47532a63a852952447204aade726b651ccedbc824747febc792d0ed0d96b30"
   },
   "source": {
     "dbc_tools": "C:\\Users\\fogen\\vmangos-dbc-inspect",
@@ -55,7 +55,7 @@
       "group": "core",
       "exists": true,
       "bytes": 3061712,
-      "sha256": "3d311f7b7bd3d2ef7572233e7cdc6dc5972aec06bb71d451e5d26d9ceaf99a7c"
+      "sha256": "9a44cbd0b4451e7d3cee322d80755ae5f76501a2d2fd080561180e5b72565c35"
     },
     {
       "archive_path": "DBFilesClient\\ItemVisuals.dbc",
@@ -63,8 +63,8 @@
       "source_repo_path": "vmangos-dbc-inspect\\ItemVisuals.patched.dbc",
       "group": "core",
       "exists": true,
-      "bytes": 885,
-      "sha256": "51412691c251bda636c934116df05c3f0eaa8da23950e8580bb18ebee99cb86d"
+      "bytes": 909,
+      "sha256": "49eb21efe90d21994e58b452b6bc559bb62925f9677a65f6e026a639527b7267"
     },
     {
       "archive_path": "DBFilesClient\\ItemVisualEffects.dbc",
@@ -72,8 +72,8 @@
       "source_repo_path": "vmangos-dbc-inspect\\ItemVisualEffects.patched.dbc",
       "group": "core",
       "exists": true,
-      "bytes": 1701,
-      "sha256": "dade7438e06f0d2b16ff9f2063c54ddb3be72802b5225634f7d55f501106b296"
+      "bytes": 1743,
+      "sha256": "4f30338962ab89362acf60c87b0de20937dc60849f6dbc64dc3dc9f9f96198d0"
     },
     {
       "archive_path": "Item\\ObjectComponents\\Weapon\\Sword_2H_Ashbringer02.m2",
@@ -407,6 +407,33 @@
       "exists": true,
       "bytes": 6652,
       "sha256": "7c91365610962dfa6cb542232e3d704f24cacc018e51f4afad4e86aa1d75a97d"
+    },
+    {
+      "archive_path": "Spells\\Enchantments\\IblisGlow.m2",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\IblisGlow.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\IblisGlow.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 2704,
+      "sha256": "b9e554ab32c2edd713c3e1eb8e4cc3d1d7727667d3c4addba0a19ef5e8287d7f"
+    },
+    {
+      "archive_path": "Spells\\Enchantments\\IblisGlow.mdx",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\IblisGlow.m2",
+      "source_repo_path": "vmangos-dbc-inspect\\IblisGlow.m2",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 2704,
+      "sha256": "b9e554ab32c2edd713c3e1eb8e4cc3d1d7727667d3c4addba0a19ef5e8287d7f"
+    },
+    {
+      "archive_path": "SPELLS\\IBLISGLOW.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\SPELLS__IBLISGLOW.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\SPELLS__IBLISGLOW.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 3916,
+      "sha256": "d3d6377f8b03fe9062821f41b359ed39060668687930620e3929b370b447d3b6"
     }
   ],
   "player_addon": {

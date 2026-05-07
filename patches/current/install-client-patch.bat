@@ -3,8 +3,8 @@ setlocal EnableExtensions EnableDelayedExpansion
 
 set "PATCH_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/patch-Z.MPQ"
 set "MANIFEST_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/manifest.json"
-set "PATCH_SHA256=B44F61B6B245A9C0E2B21A9E41FBA9D36FD4A1A2B6209A9EE2F475920D48C706"
-set "PATCH_BYTES=20559350"
+set "PATCH_SHA256=2D47532A63A852952447204AADE726B651CCEDBC824747FEBC792D0ED0D96B30"
+set "PATCH_BYTES=20568818"
 set "PATCH_NAME=patch-Z.MPQ"
 set "ADDON_NAME=CultRedeem"
 set "ADDON_TOC_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/addons/CultRedeem/CultRedeem.toc"
