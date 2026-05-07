@@ -1,10 +1,10 @@
 {
   "kind": "vmangos-client-patch-bundle",
-  "created_at": "2026-05-07T23:08:24+0200",
+  "created_at": "2026-05-07T23:18:05+0200",
   "patch": {
     "file": "patch-Z.MPQ",
-    "bytes": 20568818,
-    "sha256": "2d47532a63a852952447204aade726b651ccedbc824747febc792d0ed0d96b30"
+    "bytes": 20580970,
+    "sha256": "f61b674cd898f338e5142e3417b824da11acf8059dfaacc5bfa54856d37d82ed"
   },
   "source": {
     "dbc_tools": "C:\\Users\\fogen\\vmangos-dbc-inspect",
@@ -54,8 +54,8 @@
       "source_repo_path": "vmangos-dbc-inspect\\ItemDisplayInfo.patched.dbc",
       "group": "core",
       "exists": true,
-      "bytes": 3061712,
-      "sha256": "9a44cbd0b4451e7d3cee322d80755ae5f76501a2d2fd080561180e5b72565c35"
+      "bytes": 3061728,
+      "sha256": "61ae113bf33f4aa4375c62a3f11383455ee37405f36b36e63ebc1bbb404c6a8e"
     },
     {
       "archive_path": "DBFilesClient\\ItemVisuals.dbc",
@@ -415,7 +415,7 @@
       "group": "legendary_void",
       "exists": true,
       "bytes": 2704,
-      "sha256": "b9e554ab32c2edd713c3e1eb8e4cc3d1d7727667d3c4addba0a19ef5e8287d7f"
+      "sha256": "f34ac5aab24451776506def87ad7486eb74dbc3a3739d07fc7c416488c81b5ba"
     },
     {
       "archive_path": "Spells\\Enchantments\\IblisGlow.mdx",
@@ -424,7 +424,7 @@
       "group": "legendary_void",
       "exists": true,
       "bytes": 2704,
-      "sha256": "b9e554ab32c2edd713c3e1eb8e4cc3d1d7727667d3c4addba0a19ef5e8287d7f"
+      "sha256": "f34ac5aab24451776506def87ad7486eb74dbc3a3739d07fc7c416488c81b5ba"
     },
     {
       "archive_path": "SPELLS\\IBLISGLOW.BLP",
@@ -433,7 +433,16 @@
       "group": "legendary_void",
       "exists": true,
       "bytes": 3916,
-      "sha256": "d3d6377f8b03fe9062821f41b359ed39060668687930620e3929b370b447d3b6"
+      "sha256": "331f77d5872068c158e31ea6c672f489592972a6043bbe4c4b90bc184d347acf"
+    },
+    {
+      "archive_path": "Item\\ObjectComponents\\Weapon\\IBLIS_BASE_DARK.BLP",
+      "source_path": "C:\\Users\\fogen\\vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__IBLIS_BASE_DARK.BLP",
+      "source_repo_path": "vmangos-dbc-inspect\\ITEM__OBJECTCOMPONENTS__WEAPON__IBLIS_BASE_DARK.BLP",
+      "group": "legendary_void",
+      "exists": true,
+      "bytes": 12108,
+      "sha256": "20fde63285188899082364893fa719de294d4a93b02f23c29420acab48d42d2a"
     }
   ],
   "player_addon": {
