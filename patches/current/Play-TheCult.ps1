@@ -88,7 +88,18 @@ function Download-File([string]$Url, [string]$Destination, [int]$Retries = 5) {
 
 function Get-Sha256([string]$Path) {
   if (-not (Test-Path -LiteralPath $Path)) { return "" }
-  return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
+  $stream = [System.IO.File]::OpenRead($Path)
+  try {
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+      $bytes = $sha.ComputeHash($stream)
+      return ([BitConverter]::ToString($bytes) -replace "-", "").ToLowerInvariant()
+    } finally {
+      $sha.Dispose()
+    }
+  } finally {
+    $stream.Dispose()
+  }
 }
 
 function Clear-ClientCache([string]$Root) {
