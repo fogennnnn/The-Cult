@@ -407,46 +407,73 @@ function Invoke-WowAutoLogin([object]$Login) {
   $shell.SendKeys("{ENTER}")
 }
 
-function Install-PlayShortcut([string]$Root) {
-  $state = Get-StateDir
-  $bootstrap = Join-Path $state "Play-TheCult.bat"
-  $repoBootstrap = Join-Path $PSScriptRoot "Play-TheCult.bat"
-  if (Test-Path -LiteralPath $repoBootstrap) {
-    $sourcePath = (Resolve-Path -LiteralPath $repoBootstrap).Path
-    $targetPath = [System.IO.Path]::GetFullPath($bootstrap)
-    if ($sourcePath -ine $targetPath) {
-      Copy-Item -LiteralPath $repoBootstrap -Destination $bootstrap -Force
-    }
-  } else {
-    Set-Content -LiteralPath $bootstrap -Encoding ASCII -Value @'
+function Get-LauncherBootstrapContent {
+  return @'
 @echo off
 setlocal EnableExtensions
+
 set "LAUNCHER_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/Play-TheCult.ps1"
 set "LAUNCHER_API=https://api.github.com/repos/fogennnnn/The-Cult/contents/patches/current/Play-TheCult.ps1?ref=master"
 set "LAUNCHER_DIR=%LOCALAPPDATA%\TheCult"
 set "LAUNCHER=%LAUNCHER_DIR%\Play-TheCult.ps1"
 set "LAUNCHER_FETCH=%LAUNCHER_URL%?v=%RANDOM%%RANDOM%"
+
 if not exist "%LAUNCHER_DIR%" mkdir "%LAUNCHER_DIR%" >NUL 2>NUL
 if exist "%LAUNCHER%" del /F /Q "%LAUNCHER%" >NUL 2>NUL
+
 powershell -NoProfile -ExecutionPolicy Bypass -Command "try { $ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; $headers=@{'User-Agent'='TheCultLauncher'}; $res=Invoke-WebRequest -Uri $env:LAUNCHER_API -Headers $headers -UseBasicParsing; $json=$res.Content | ConvertFrom-Json; $bytes=[Convert]::FromBase64String(($json.content -replace '\s','')); [IO.File]::WriteAllBytes($env:LAUNCHER,$bytes); exit 0 } catch { try { Invoke-WebRequest -Uri $env:LAUNCHER_FETCH -OutFile $env:LAUNCHER -UseBasicParsing; exit 0 } catch { Write-Host $_; exit 1 } }"
-if errorlevel 1 exit /b 1
+if errorlevel 1 (
+  echo Failed to update launcher from:
+  echo   %LAUNCHER_URL%
+  pause
+  exit /b 1
+)
+if not exist "%LAUNCHER%" (
+  echo Failed to write launcher file:
+  echo   %LAUNCHER%
+  pause
+  exit /b 1
+)
+
 powershell -NoProfile -ExecutionPolicy Bypass -File "%LAUNCHER%" %*
 exit /b %ERRORLEVEL%
 '@
-  }
+}
 
-  $desktop = [Environment]::GetFolderPath("Desktop")
-  $shortcutPath = Join-Path $desktop "The Cult.lnk"
-  $wow = Join-Path $Root "WoW.exe"
-  if (-not (Test-Path -LiteralPath $wow)) { $wow = Join-Path $Root "Wow.exe" }
+function New-PlayShortcut([string]$ShortcutPath, [string]$TargetPath, [string]$Root, [string]$IconPath) {
+  New-Item -ItemType Directory -Force -Path (Split-Path -Parent $ShortcutPath) | Out-Null
   $shell = New-Object -ComObject WScript.Shell
-  $shortcut = $shell.CreateShortcut($shortcutPath)
-  $shortcut.TargetPath = $bootstrap
+  $shortcut = $shell.CreateShortcut($ShortcutPath)
+  $shortcut.TargetPath = $TargetPath
   $shortcut.WorkingDirectory = $Root
-  $shortcut.IconLocation = "$wow,0"
+  $shortcut.IconLocation = "$IconPath,0"
   $shortcut.Description = "The Cult auto-updating WoW launcher"
   $shortcut.Save()
-  Write-Step "Installed desktop shortcut: $shortcutPath"
+}
+
+function Install-PlayShortcut([string]$Root) {
+  $state = Get-StateDir
+  $localBootstrap = Join-Path $state "Play-TheCult.bat"
+  $clientBootstrap = Join-Path $Root "Play-TheCult.bat"
+  $bootstrapContent = Get-LauncherBootstrapContent
+  Set-Content -LiteralPath $localBootstrap -Encoding ASCII -Value $bootstrapContent
+  Set-Content -LiteralPath $clientBootstrap -Encoding ASCII -Value $bootstrapContent
+
+  $wow = Join-Path $Root "WoW.exe"
+  if (-not (Test-Path -LiteralPath $wow)) { $wow = Join-Path $Root "Wow.exe" }
+
+  $desktopShortcut = Join-Path ([Environment]::GetFolderPath("Desktop")) "The Cult.lnk"
+  $startShortcut = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\The Cult.lnk"
+  $taskbarShortcut = Join-Path $env:APPDATA "Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\The Cult.lnk"
+
+  New-PlayShortcut -ShortcutPath $desktopShortcut -TargetPath $clientBootstrap -Root $Root -IconPath $wow
+  New-PlayShortcut -ShortcutPath $startShortcut -TargetPath $clientBootstrap -Root $Root -IconPath $wow
+  New-PlayShortcut -ShortcutPath $taskbarShortcut -TargetPath $clientBootstrap -Root $Root -IconPath $wow
+
+  Write-Step "Installed launcher: $clientBootstrap"
+  Write-Step "Installed desktop shortcut: $desktopShortcut"
+  Write-Step "Installed Start shortcut: $startShortcut"
+  Write-Step "Installed taskbar shortcut file: $taskbarShortcut"
 }
 
 function Ensure-CurrentPatch([string]$Root) {
@@ -529,7 +556,7 @@ if (-not $effectiveAccountName -and $login -and $login.AccountName) {
 Repair-ClientConfig -Root $client -LoginAccountName $effectiveAccountName
 Ensure-CurrentPatch -Root $client
 
-if ($InstallShortcut) {
+if ($InstallShortcut -or $SetupLogin) {
   Install-PlayShortcut -Root $client
 }
 

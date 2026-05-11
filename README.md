@@ -69,13 +69,19 @@ password.
 Optional saved login setup:
 
 ```powershell
-.\Play-TheCult.bat -SetupLogin -AccountName "myaccount" -InstallShortcut
+.\Play-TheCult.bat -SetupLogin
 ```
 
 The launcher stores the password with Windows user encryption under
 `%LOCALAPPDATA%\TheCult`, uses Windows Hello once per boot when available, then
 launches WoW and submits the saved password quickly. If a client does not focus the
 password field after `SET accountName`, launch with `-TypeAccountOnLogin` once.
+
+Setup mode also writes `Play-TheCult.bat` into the WoW client folder and creates
+shortcuts with the `WoW.exe` icon on the desktop, in the Start menu, and in the
+current user's taskbar pinned-shortcut folder. Modern Windows may still require
+the user to approve/refresh the actual taskbar pin, but the shortcut file is
+created in the standard pinned location.
 
 To patch without being prompted for login setup:
 
