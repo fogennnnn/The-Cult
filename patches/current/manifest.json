@@ -1,15 +1,15 @@
 {
   "kind": "vmangos-client-patch-bundle",
-  "created_at": "2026-05-11T05:07:30+02:00",
+  "created_at": "2026-05-11T11:25:46+0200",
   "patch": {
     "file": "patch-Z.MPQ",
     "bytes": 20580970,
-    "sha256": "f61b674cd898f338e5142e3417b824da11acf8059dfaacc5bfa54856d37d82ed"
+    "sha256": "c253b4cb28caa44210353fbb9d983fa7db8d39591a7c7cfb530bc765fc7e6968"
   },
   "source": {
     "dbc_tools": "C:\\Users\\fogen\\vmangos-dbc-inspect",
     "builder": "C:\\Users\\fogen\\vmangos-dbc-inspect\\build_client_patch_mpq.py",
-    "used_existing_mpq": ".\\patches\\current\\patch-Z.MPQ"
+    "used_existing_mpq": null
   },
   "install": {
     "target": "WoW 1.12.1 Data folder",
@@ -91,7 +91,7 @@
       "group": "texture",
       "exists": true,
       "bytes": 3916,
-      "sha256": "b7876598f797bfebd243f342d139bc2b9365244e437279a029217cc827d1204e"
+      "sha256": "095613553da5f58dcd30fd954176a4aeaeff5430cb25aa61175c61d156ecabe3"
     },
     {
       "archive_path": "SPELLS\\VDB2.BLP",
@@ -100,7 +100,7 @@
       "group": "texture",
       "exists": true,
       "bytes": 3916,
-      "sha256": "b7876598f797bfebd243f342d139bc2b9365244e437279a029217cc827d1204e"
+      "sha256": "095613553da5f58dcd30fd954176a4aeaeff5430cb25aa61175c61d156ecabe3"
     },
     {
       "archive_path": "ITEM\\OBJECTCOMPONENTS\\AMMO\\VDBLKGLOW.BLP",
@@ -109,7 +109,7 @@
       "group": "texture",
       "exists": true,
       "bytes": 3916,
-      "sha256": "b7876598f797bfebd243f342d139bc2b9365244e437279a029217cc827d1204e"
+      "sha256": "095613553da5f58dcd30fd954176a4aeaeff5430cb25aa61175c61d156ecabe3"
     },
     {
       "archive_path": "SPELLS\\VDBALL.BLP",
@@ -118,7 +118,7 @@
       "group": "texture",
       "exists": true,
       "bytes": 3916,
-      "sha256": "cbc0038bd4fea63e612c0134bc709dea85ec92d2eee54c1e9cdcf2ebe9c84822"
+      "sha256": "095613553da5f58dcd30fd954176a4aeaeff5430cb25aa61175c61d156ecabe3"
     },
     {
       "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VOIDBLADE01.BLP",
