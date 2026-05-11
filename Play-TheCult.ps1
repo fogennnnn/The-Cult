@@ -539,11 +539,13 @@ if ($SetupLogin) {
 }
 
 $login = $null
+$loginCreatedThisRun = $false
 if (-not $NoAutoLogin) {
   $login = Load-LoginSecret
   if (-not $login -and -not $NoLaunch -and -not $NoLoginSetup) {
     Write-Step "No saved login found. Saving one now so future launches go straight in."
     Save-LoginSecret -Name $AccountName
+    $loginCreatedThisRun = $true
     $login = Load-LoginSecret
   }
 }
@@ -556,7 +558,7 @@ if (-not $effectiveAccountName -and $login -and $login.AccountName) {
 Repair-ClientConfig -Root $client -LoginAccountName $effectiveAccountName
 Ensure-CurrentPatch -Root $client
 
-if ($InstallShortcut -or $SetupLogin) {
+if ($InstallShortcut -or $SetupLogin -or $loginCreatedThisRun) {
   Install-PlayShortcut -Root $client
 }
 
