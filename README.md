@@ -74,7 +74,7 @@ Optional saved login setup:
 
 The launcher stores the password with Windows user encryption under
 `%LOCALAPPDATA%\TheCult`, uses Windows Hello once per boot when available, then
-launches WoW and submits the saved password. If a client does not focus the
+launches WoW and submits the saved password quickly. If a client does not focus the
 password field after `SET accountName`, launch with `-TypeAccountOnLogin` once.
 
 To patch without being prompted for login setup:

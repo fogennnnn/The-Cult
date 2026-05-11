@@ -17,7 +17,7 @@ param(
   [switch]$InstallShortcut,
   [switch]$TypeAccountOnLogin,
   [switch]$NoLoginSetup,
-  [int]$LoginDelaySeconds = 5
+  [int]$LoginDelaySeconds = 1
 )
 
 $ErrorActionPreference = "Stop"
@@ -375,7 +375,6 @@ function Wait-ForWowWindow([int]$TimeoutSeconds = 40) {
 function Invoke-WowAutoLogin([object]$Login) {
   if (-not $Login -or -not $Login.AccountName -or -not $Login.Password) { return }
 
-  Invoke-WindowsHelloOncePerBoot
   Write-Step "Auto-login armed for $($Login.AccountName)."
 
   $proc = Wait-ForWowWindow
@@ -542,6 +541,9 @@ if ($NoLaunch) {
 }
 
 Write-Step "Launching The Cult."
+if ($login) {
+  Invoke-WindowsHelloOncePerBoot
+}
 $process = Start-Process -FilePath $wow -WorkingDirectory $client -PassThru
 if ($login) {
   Invoke-WowAutoLogin -Login $login
