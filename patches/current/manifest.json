@@ -1,10 +1,10 @@
 {
   "kind": "vmangos-client-patch-bundle",
-  "created_at": "2026-05-11T15:16:08+0200",
+  "created_at": "2026-05-11T17:44:20+0200",
   "patch": {
     "file": "patch-Z.MPQ",
-    "bytes": 20582476,
-    "sha256": "48054e60a203b810fcf904aa42a15c48aab7d832661c6c71e6bb8be32e1750d1"
+    "bytes": 20580970,
+    "sha256": "8e047f7e420a9cfc0ffa0ae0a9369c249e8530d286257a019152ec7e3ec61c46"
   },
   "source": {
     "dbc_tools": "C:\\Users\\fogen\\vmangos-dbc-inspect",
@@ -27,8 +27,8 @@
       "source_repo_path": "vmangos-dbc-inspect\\Spell.patched.dbc",
       "group": "core",
       "exists": true,
-      "bytes": 16373110,
-      "sha256": "8e305e4c707233d11ad30eb101ec41cfefebf5db29455852bbb8f4dea62538d9"
+      "bytes": 16371604,
+      "sha256": "e9e4b7683b3e83a1d4d1fcebccd787a4ff55495641c1f2d07b82a898c8eb79d6"
     },
     {
       "archive_path": "DBFilesClient\\SkillLineAbility.dbc",
