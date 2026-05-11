@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions
 
-set "LAUNCHER_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/Play-TheCult.ps1"
+set "LAUNCHER_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/Play-TheCult.ps1"
 set "LAUNCHER_DIR=%LOCALAPPDATA%\TheCult"
 set "LAUNCHER=%LAUNCHER_DIR%\Play-TheCult.ps1"
 set "LAUNCHER_FETCH=%LAUNCHER_URL%?v=%RANDOM%%RANDOM%"

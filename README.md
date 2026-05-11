@@ -54,7 +54,8 @@ https://raw.githubusercontent.com/fogennnnn/The-Cult/master/Play-TheCult.bat
 `Play-TheCult.bat` is the preferred shortcut for players. It refreshes the
 launcher script, checks `patches/current/manifest.json`, installs `patch-Z.MPQ`
 only when the remote hash changes, refreshes the bundled addons, clears WDB
-after patch changes, repairs `realmlist.wtf`/`Config.wtf`, and starts `WoW.exe`.
+after patch changes, repairs `realmlist.wtf`/`Config.wtf`, asks for a saved
+login if one is missing, and starts `WoW.exe`.
 
 Optional account-name prefill:
 
@@ -65,7 +66,7 @@ Optional account-name prefill:
 This writes only `SET accountName` to `WTF\Config.wtf`. It does not store a
 password.
 
-Optional saved login:
+Optional saved login setup:
 
 ```powershell
 .\Play-TheCult.bat -SetupLogin -AccountName "myaccount" -InstallShortcut
@@ -75,6 +76,12 @@ The launcher stores the password with Windows user encryption under
 `%LOCALAPPDATA%\TheCult`, uses Windows Hello once per boot when available, then
 launches WoW and submits the saved password. If a client does not focus the
 password field after `SET accountName`, launch with `-TypeAccountOnLogin` once.
+
+To patch without being prompted for login setup:
+
+```powershell
+.\Play-TheCult.bat -NoLoginSetup
+```
 
 Forget the saved login:
 

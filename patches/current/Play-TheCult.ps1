@@ -16,6 +16,7 @@ param(
   [switch]$RequireWindowsHello,
   [switch]$InstallShortcut,
   [switch]$TypeAccountOnLogin,
+  [switch]$NoLoginSetup,
   [int]$LoginDelaySeconds = 5
 )
 
@@ -386,7 +387,7 @@ function Install-PlayShortcut([string]$Root) {
     Set-Content -LiteralPath $bootstrap -Encoding ASCII -Value @'
 @echo off
 setlocal EnableExtensions
-set "LAUNCHER_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/Play-TheCult.ps1"
+set "LAUNCHER_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/Play-TheCult.ps1"
 set "LAUNCHER_DIR=%LOCALAPPDATA%\TheCult"
 set "LAUNCHER=%LAUNCHER_DIR%\Play-TheCult.ps1"
 set "LAUNCHER_FETCH=%LAUNCHER_URL%?v=%RANDOM%%RANDOM%"
@@ -478,6 +479,11 @@ if ($SetupLogin) {
 $login = $null
 if (-not $NoAutoLogin) {
   $login = Load-LoginSecret
+  if (-not $login -and -not $NoLaunch -and -not $NoLoginSetup) {
+    Write-Step "No saved login found. Saving one now so future launches go straight in."
+    Save-LoginSecret -Name $AccountName
+    $login = Load-LoginSecret
+  }
 }
 
 $effectiveAccountName = $AccountName
