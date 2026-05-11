@@ -1,10 +1,10 @@
 {
   "kind": "vmangos-client-patch-bundle",
-  "created_at": "2026-05-11T11:25:46+0200",
+  "created_at": "2026-05-11T14:47:35+0200",
   "patch": {
     "file": "patch-Z.MPQ",
     "bytes": 20580970,
-    "sha256": "c253b4cb28caa44210353fbb9d983fa7db8d39591a7c7cfb530bc765fc7e6968"
+    "sha256": "7d489db2075a8e5e53a516f1da24a935675e4d647aa16004423cb05e6d0f27ec"
   },
   "source": {
     "dbc_tools": "C:\\Users\\fogen\\vmangos-dbc-inspect",
@@ -91,7 +91,7 @@
       "group": "texture",
       "exists": true,
       "bytes": 3916,
-      "sha256": "095613553da5f58dcd30fd954176a4aeaeff5430cb25aa61175c61d156ecabe3"
+      "sha256": "986909abc8da9013d61f3c98845bcd1198b314790ec87fe400b1966b6af26af3"
     },
     {
       "archive_path": "SPELLS\\VDB2.BLP",
@@ -100,7 +100,7 @@
       "group": "texture",
       "exists": true,
       "bytes": 3916,
-      "sha256": "095613553da5f58dcd30fd954176a4aeaeff5430cb25aa61175c61d156ecabe3"
+      "sha256": "986909abc8da9013d61f3c98845bcd1198b314790ec87fe400b1966b6af26af3"
     },
     {
       "archive_path": "ITEM\\OBJECTCOMPONENTS\\AMMO\\VDBLKGLOW.BLP",
@@ -109,7 +109,7 @@
       "group": "texture",
       "exists": true,
       "bytes": 3916,
-      "sha256": "095613553da5f58dcd30fd954176a4aeaeff5430cb25aa61175c61d156ecabe3"
+      "sha256": "986909abc8da9013d61f3c98845bcd1198b314790ec87fe400b1966b6af26af3"
     },
     {
       "archive_path": "SPELLS\\VDBALL.BLP",
@@ -118,7 +118,7 @@
       "group": "texture",
       "exists": true,
       "bytes": 3916,
-      "sha256": "095613553da5f58dcd30fd954176a4aeaeff5430cb25aa61175c61d156ecabe3"
+      "sha256": "986909abc8da9013d61f3c98845bcd1198b314790ec87fe400b1966b6af26af3"
     },
     {
       "archive_path": "ITEM\\OBJECTCOMPONENTS\\WEAPON\\VOIDBLADE01.BLP",
