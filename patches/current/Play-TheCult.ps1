@@ -37,6 +37,28 @@ function Get-LoginStorePath {
   return (Join-Path (Get-StateDir) "wow-login.json")
 }
 
+function Protect-TextForCurrentUser([string]$Text) {
+  Add-Type -AssemblyName System.Security -ErrorAction Stop
+  $bytes = [Text.Encoding]::UTF8.GetBytes($Text)
+  $protected = [Security.Cryptography.ProtectedData]::Protect(
+    $bytes,
+    $null,
+    [Security.Cryptography.DataProtectionScope]::CurrentUser
+  )
+  return [Convert]::ToBase64String($protected)
+}
+
+function Unprotect-TextForCurrentUser([string]$ProtectedText) {
+  Add-Type -AssemblyName System.Security -ErrorAction Stop
+  $bytes = [Convert]::FromBase64String($ProtectedText)
+  $plain = [Security.Cryptography.ProtectedData]::Unprotect(
+    $bytes,
+    $null,
+    [Security.Cryptography.DataProtectionScope]::CurrentUser
+  )
+  return [Text.Encoding]::UTF8.GetString($plain)
+}
+
 function Get-BootId {
   try {
     $os = Get-CimInstance Win32_OperatingSystem -ErrorAction Stop
@@ -106,10 +128,13 @@ function Save-LoginSecret([string]$Name) {
   if (-not $Name.Trim()) { throw "Account name is required." }
 
   $securePassword = Read-Host "WoW password for $Name" -AsSecureString
-  $encrypted = $securePassword | ConvertFrom-SecureString
+  $plainPassword = Get-PlainTextFromSecureString $securePassword
+  $encrypted = Protect-TextForCurrentUser $plainPassword
+  $plainPassword = $null
   $payload = [ordered]@{
     accountName = $Name.Trim()
-    password = $encrypted
+    passwordDpapi = $encrypted
+    storage = "windows-dpapi-current-user"
     savedAt = (Get-Date).ToString("o")
   }
   $path = Get-LoginStorePath
@@ -140,12 +165,22 @@ function Load-LoginSecret {
   $path = Get-LoginStorePath
   if (-not (Test-Path -LiteralPath $path)) { return $null }
 
-  $payload = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
-  if (-not $payload.accountName -or -not $payload.password) { return $null }
-  $secure = ConvertTo-SecureString ([string]$payload.password)
-  return [pscustomobject]@{
-    AccountName = [string]$payload.accountName
-    Password = Get-PlainTextFromSecureString $secure
+  try {
+    $payload = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
+    if (-not $payload.accountName) { return $null }
+    $dpapiProperty = $payload.PSObject.Properties["passwordDpapi"]
+    if ($dpapiProperty -and $dpapiProperty.Value) {
+      return [pscustomobject]@{
+        AccountName = [string]$payload.accountName
+        Password = Unprotect-TextForCurrentUser ([string]$dpapiProperty.Value)
+      }
+    }
+
+    Write-Warning "Saved login was created by an older launcher. It will be replaced on the next interactive launch."
+    return $null
+  } catch {
+    Write-Warning "Saved login could not be loaded: $($_.Exception.Message)"
+    return $null
   }
 }
 
