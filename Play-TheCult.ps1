@@ -377,7 +377,11 @@ function Install-PlayShortcut([string]$Root) {
   $bootstrap = Join-Path $state "Play-TheCult.bat"
   $repoBootstrap = Join-Path $PSScriptRoot "Play-TheCult.bat"
   if (Test-Path -LiteralPath $repoBootstrap) {
-    Copy-Item -LiteralPath $repoBootstrap -Destination $bootstrap -Force
+    $sourcePath = (Resolve-Path -LiteralPath $repoBootstrap).Path
+    $targetPath = [System.IO.Path]::GetFullPath($bootstrap)
+    if ($sourcePath -ine $targetPath) {
+      Copy-Item -LiteralPath $repoBootstrap -Destination $bootstrap -Force
+    }
   } else {
     Set-Content -LiteralPath $bootstrap -Encoding ASCII -Value @'
 @echo off
