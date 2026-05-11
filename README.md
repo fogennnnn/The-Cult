@@ -64,3 +64,20 @@ Optional account-name prefill:
 
 This writes only `SET accountName` to `WTF\Config.wtf`. It does not store a
 password.
+
+Optional saved login:
+
+```powershell
+.\Play-TheCult.bat -SetupLogin -AccountName "myaccount" -InstallShortcut
+```
+
+The launcher stores the password with Windows user encryption under
+`%LOCALAPPDATA%\TheCult`, uses Windows Hello once per boot when available, then
+launches WoW and submits the saved password. If a client does not focus the
+password field after `SET accountName`, launch with `-TypeAccountOnLogin` once.
+
+Forget the saved login:
+
+```powershell
+.\Play-TheCult.bat -ForgetLogin
+```

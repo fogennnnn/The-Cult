@@ -8,7 +8,15 @@ param(
   [string]$ManifestUrl = "https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/manifest.json",
   [string]$PatchBaseUrl = "https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current",
   [switch]$NoLaunch,
-  [switch]$ClearWdbAlways
+  [switch]$ClearWdbAlways,
+  [switch]$SetupLogin,
+  [switch]$ForgetLogin,
+  [switch]$NoAutoLogin,
+  [switch]$NoWindowsHello,
+  [switch]$RequireWindowsHello,
+  [switch]$InstallShortcut,
+  [switch]$TypeAccountOnLogin,
+  [int]$LoginDelaySeconds = 5
 )
 
 $ErrorActionPreference = "Stop"
@@ -16,6 +24,128 @@ Set-StrictMode -Version Latest
 
 function Write-Step([string]$Message) {
   Write-Host "==> $Message" -ForegroundColor Cyan
+}
+
+function Get-StateDir {
+  $path = Join-Path $env:LOCALAPPDATA "TheCult"
+  New-Item -ItemType Directory -Force -Path $path | Out-Null
+  return $path
+}
+
+function Get-LoginStorePath {
+  return (Join-Path (Get-StateDir) "wow-login.json")
+}
+
+function Get-BootId {
+  try {
+    $os = Get-CimInstance Win32_OperatingSystem -ErrorAction Stop
+    return ([Management.ManagementDateTimeConverter]::ToDateTime($os.LastBootUpTime)).ToString("o")
+  } catch {
+    $os = Get-WmiObject Win32_OperatingSystem -ErrorAction Stop
+    return ([Management.ManagementDateTimeConverter]::ToDateTime($os.LastBootUpTime)).ToString("o")
+  }
+}
+
+function Await-WinRtOperation($Operation, [Type]$ResultType) {
+  Add-Type -AssemblyName System.Runtime.WindowsRuntime -ErrorAction Stop
+  $method = [System.WindowsRuntimeSystemExtensions].GetMethods() |
+    Where-Object {
+      $_.Name -eq "AsTask" -and
+      $_.IsGenericMethodDefinition -and
+      $_.GetParameters().Count -eq 1 -and
+      $_.GetParameters()[0].ParameterType.Name -like "IAsyncOperation*"
+    } |
+    Select-Object -First 1
+  if (-not $method) { throw "Windows Runtime async bridge was unavailable." }
+  $task = $method.MakeGenericMethod($ResultType).Invoke($null, @($Operation))
+  $task.Wait()
+  return $task.Result
+}
+
+function Invoke-WindowsHelloOncePerBoot {
+  if ($NoWindowsHello) { return }
+
+  $bootId = Get-BootId
+  $gatePath = Join-Path (Get-StateDir) "windows-hello-boot.txt"
+  if ((Test-Path -LiteralPath $gatePath) -and ((Get-Content -LiteralPath $gatePath -Raw).Trim() -eq $bootId)) {
+    return
+  }
+
+  try {
+    [Windows.Security.Credentials.UI.UserConsentVerifier,Windows.Security.Credentials.UI,ContentType=WindowsRuntime] | Out-Null
+    $availability = Await-WinRtOperation `
+      ([Windows.Security.Credentials.UI.UserConsentVerifier]::CheckAvailabilityAsync()) `
+      ([Windows.Security.Credentials.UI.UserConsentVerifierAvailability])
+
+    if ([string]$availability -ne "Available") {
+      if ($RequireWindowsHello) { throw "Windows Hello is not available: $availability" }
+      Write-Warning "Windows Hello is not available on this PC: $availability. Continuing without Hello."
+      return
+    }
+
+    $result = Await-WinRtOperation `
+      ([Windows.Security.Credentials.UI.UserConsentVerifier]::RequestVerificationAsync("Unlock The Cult auto-login")) `
+      ([Windows.Security.Credentials.UI.UserConsentVerificationResult])
+
+    if ([string]$result -ne "Verified") {
+      throw "Windows Hello verification failed: $result"
+    }
+
+    Set-Content -LiteralPath $gatePath -Encoding ASCII -Value $bootId
+  } catch {
+    if ($RequireWindowsHello) { throw }
+    Write-Warning "Windows Hello gate could not run: $($_.Exception.Message). Continuing without Hello."
+  }
+}
+
+function Save-LoginSecret([string]$Name) {
+  if (-not $Name.Trim()) {
+    $Name = Read-Host "WoW account name"
+  }
+  if (-not $Name.Trim()) { throw "Account name is required." }
+
+  $securePassword = Read-Host "WoW password for $Name" -AsSecureString
+  $encrypted = $securePassword | ConvertFrom-SecureString
+  $payload = [ordered]@{
+    accountName = $Name.Trim()
+    password = $encrypted
+    savedAt = (Get-Date).ToString("o")
+  }
+  $path = Get-LoginStorePath
+  Set-Content -LiteralPath $path -Encoding UTF8 -Value ($payload | ConvertTo-Json)
+  Write-Step "Saved login for $($payload.accountName) with Windows user encryption."
+}
+
+function Remove-LoginSecret {
+  $path = Get-LoginStorePath
+  if (Test-Path -LiteralPath $path) {
+    Remove-Item -LiteralPath $path -Force
+    Write-Step "Forgot saved WoW login."
+  }
+}
+
+function Get-PlainTextFromSecureString([Security.SecureString]$Secure) {
+  $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Secure)
+  try {
+    return [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+  } finally {
+    if ($bstr -ne [IntPtr]::Zero) {
+      [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+    }
+  }
+}
+
+function Load-LoginSecret {
+  $path = Get-LoginStorePath
+  if (-not (Test-Path -LiteralPath $path)) { return $null }
+
+  $payload = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
+  if (-not $payload.accountName -or -not $payload.password) { return $null }
+  $secure = ConvertTo-SecureString ([string]$payload.password)
+  return [pscustomobject]@{
+    AccountName = [string]$payload.accountName
+    Password = Get-PlainTextFromSecureString $secure
+  }
 }
 
 function Resolve-ClientPath([string]$Path) {
@@ -132,7 +262,7 @@ function Set-ConfigValue([System.Collections.Generic.List[string]]$Lines, [strin
   }
 }
 
-function Repair-ClientConfig([string]$Root) {
+function Repair-ClientConfig([string]$Root, [string]$LoginAccountName = "") {
   $realmlist = Join-Path $Root "realmlist.wtf"
   Set-Content -LiteralPath $realmlist -Encoding ASCII -Value @(
     "set realmlist $RealmHost",
@@ -153,8 +283,8 @@ function Repair-ClientConfig([string]$Root) {
   Set-ConfigValue -Lines $lines -Key "realmList" -Value $RealmHost
   Set-ConfigValue -Lines $lines -Key "patchList" -Value ""
   Set-ConfigValue -Lines $lines -Key "realmName" -Value $RealmName
-  if ($AccountName.Trim()) {
-    Set-ConfigValue -Lines $lines -Key "accountName" -Value $AccountName.Trim()
+  if ($LoginAccountName.Trim()) {
+    Set-ConfigValue -Lines $lines -Key "accountName" -Value $LoginAccountName.Trim()
   }
 
   Set-Content -LiteralPath $config -Encoding ASCII -Value $lines
@@ -171,6 +301,112 @@ function Install-Addons([string]$Root, $Manifest) {
       Download-File -Url $url -Destination (Join-Path $addonDir $leaf)
     }
   }
+}
+
+function Escape-SendKeysText([string]$Text) {
+  if ($null -eq $Text) { return "" }
+  $out = New-Object System.Text.StringBuilder
+  foreach ($ch in $Text.ToCharArray()) {
+    switch ($ch) {
+      '+' { [void]$out.Append("{+}") }
+      '^' { [void]$out.Append("{^}") }
+      '%' { [void]$out.Append("{%}") }
+      '~' { [void]$out.Append("{~}") }
+      '(' { [void]$out.Append("{(}") }
+      ')' { [void]$out.Append("{)}") }
+      '[' { [void]$out.Append("{[}") }
+      ']' { [void]$out.Append("{]}") }
+      '{' { [void]$out.Append("{{}") }
+      '}' { [void]$out.Append("{}}") }
+      default { [void]$out.Append($ch) }
+    }
+  }
+  return $out.ToString()
+}
+
+function Wait-ForWowWindow([int]$TimeoutSeconds = 40) {
+  $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
+  do {
+    $proc = Get-Process -Name "WoW" -ErrorAction SilentlyContinue |
+      Where-Object { $_.MainWindowHandle -ne 0 } |
+      Select-Object -First 1
+    if ($proc) { return $proc }
+    Start-Sleep -Milliseconds 500
+  } while ((Get-Date) -lt $deadline)
+  return $null
+}
+
+function Invoke-WowAutoLogin([object]$Login) {
+  if (-not $Login -or -not $Login.AccountName -or -not $Login.Password) { return }
+
+  Invoke-WindowsHelloOncePerBoot
+  Write-Step "Auto-login armed for $($Login.AccountName)."
+
+  $proc = Wait-ForWowWindow
+  if (-not $proc) {
+    Write-Warning "Could not find WoW window for auto-login."
+    return
+  }
+
+  Start-Sleep -Seconds ([Math]::Max(1, $LoginDelaySeconds))
+  $shell = New-Object -ComObject WScript.Shell
+  [void]$shell.AppActivate($proc.Id)
+  Start-Sleep -Milliseconds 400
+
+  $password = Escape-SendKeysText $Login.Password
+
+  if ($TypeAccountOnLogin) {
+    $account = Escape-SendKeysText $Login.AccountName
+    $shell.SendKeys("^a")
+    Start-Sleep -Milliseconds 100
+    $shell.SendKeys($account)
+    Start-Sleep -Milliseconds 100
+    $shell.SendKeys("{TAB}")
+    Start-Sleep -Milliseconds 100
+    $shell.SendKeys("^a")
+    Start-Sleep -Milliseconds 100
+  }
+
+  $shell.SendKeys($password)
+  Start-Sleep -Milliseconds 100
+  $shell.SendKeys("{ENTER}")
+}
+
+function Install-PlayShortcut([string]$Root) {
+  $state = Get-StateDir
+  $bootstrap = Join-Path $state "Play-TheCult.bat"
+  $repoBootstrap = Join-Path $PSScriptRoot "Play-TheCult.bat"
+  if (Test-Path -LiteralPath $repoBootstrap) {
+    Copy-Item -LiteralPath $repoBootstrap -Destination $bootstrap -Force
+  } else {
+    Set-Content -LiteralPath $bootstrap -Encoding ASCII -Value @'
+@echo off
+setlocal EnableExtensions
+set "LAUNCHER_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/Play-TheCult.ps1"
+set "LAUNCHER_DIR=%LOCALAPPDATA%\TheCult"
+set "LAUNCHER=%LAUNCHER_DIR%\Play-TheCult.ps1"
+set "LAUNCHER_FETCH=%LAUNCHER_URL%?v=%RANDOM%%RANDOM%"
+if not exist "%LAUNCHER_DIR%" mkdir "%LAUNCHER_DIR%" >NUL 2>NUL
+if exist "%LAUNCHER%" del /F /Q "%LAUNCHER%" >NUL 2>NUL
+powershell -NoProfile -ExecutionPolicy Bypass -Command "try { $ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri $env:LAUNCHER_FETCH -OutFile $env:LAUNCHER -UseBasicParsing; exit 0 } catch { Write-Host $_; exit 1 }"
+if errorlevel 1 exit /b 1
+powershell -NoProfile -ExecutionPolicy Bypass -File "%LAUNCHER%" %*
+exit /b %ERRORLEVEL%
+'@
+  }
+
+  $desktop = [Environment]::GetFolderPath("Desktop")
+  $shortcutPath = Join-Path $desktop "The Cult.lnk"
+  $wow = Join-Path $Root "WoW.exe"
+  if (-not (Test-Path -LiteralPath $wow)) { $wow = Join-Path $Root "Wow.exe" }
+  $shell = New-Object -ComObject WScript.Shell
+  $shortcut = $shell.CreateShortcut($shortcutPath)
+  $shortcut.TargetPath = $bootstrap
+  $shortcut.WorkingDirectory = $Root
+  $shortcut.IconLocation = "$wow,0"
+  $shortcut.Description = "The Cult auto-updating WoW launcher"
+  $shortcut.Save()
+  Write-Step "Installed desktop shortcut: $shortcutPath"
 }
 
 function Ensure-CurrentPatch([string]$Root) {
@@ -226,8 +462,31 @@ function Ensure-CurrentPatch([string]$Root) {
 
 $client = Find-WowClient
 Write-Step "Using client at $client"
-Repair-ClientConfig -Root $client
+
+if ($ForgetLogin) {
+  Remove-LoginSecret
+}
+
+if ($SetupLogin) {
+  Save-LoginSecret -Name $AccountName
+}
+
+$login = $null
+if (-not $NoAutoLogin) {
+  $login = Load-LoginSecret
+}
+
+$effectiveAccountName = $AccountName
+if (-not $effectiveAccountName -and $login -and $login.AccountName) {
+  $effectiveAccountName = $login.AccountName
+}
+
+Repair-ClientConfig -Root $client -LoginAccountName $effectiveAccountName
 Ensure-CurrentPatch -Root $client
+
+if ($InstallShortcut) {
+  Install-PlayShortcut -Root $client
+}
 
 $wow = Join-Path $client "WoW.exe"
 if (-not (Test-Path -LiteralPath $wow)) { $wow = Join-Path $client "Wow.exe" }
@@ -237,4 +496,7 @@ if ($NoLaunch) {
 }
 
 Write-Step "Launching The Cult."
-Start-Process -FilePath $wow -WorkingDirectory $client
+$process = Start-Process -FilePath $wow -WorkingDirectory $client -PassThru
+if ($login) {
+  Invoke-WowAutoLogin -Login $login
+}
