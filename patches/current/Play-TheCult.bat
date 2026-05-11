@@ -1,10 +1,10 @@
 @echo off
 setlocal EnableExtensions
 
-set "LAUNCHER_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/Play-TheCult.ps1"
-set "LAUNCHER_API=https://api.github.com/repos/fogennnnn/The-Cult/contents/patches/current/Play-TheCult.ps1?ref=master"
+set "LAUNCHER_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/WowCult.ps1"
+set "LAUNCHER_API=https://api.github.com/repos/fogennnnn/The-Cult/contents/patches/current/WowCult.ps1?ref=master"
 set "LAUNCHER_DIR=%LOCALAPPDATA%\TheCult"
-set "LAUNCHER=%LAUNCHER_DIR%\Play-TheCult.ps1"
+set "LAUNCHER=%LAUNCHER_DIR%\WowCult.ps1"
 set "LAUNCHER_FETCH=%LAUNCHER_URL%?v=%RANDOM%%RANDOM%"
 
 if not exist "%LAUNCHER_DIR%" mkdir "%LAUNCHER_DIR%" >NUL 2>NUL
@@ -26,3 +26,4 @@ if not exist "%LAUNCHER%" (
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "%LAUNCHER%" %*
 exit /b %ERRORLEVEL%
+

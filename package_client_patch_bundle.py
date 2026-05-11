@@ -25,7 +25,7 @@ REPO_ROOT = Path(__file__).resolve().parent
 DEFAULT_DBC_TOOLS = REPO_ROOT.parent / "vmangos-dbc-inspect"
 DEFAULT_RELEASE_DIR = REPO_ROOT / "patches" / "releases"
 DEFAULT_CURRENT_DIR = REPO_ROOT / "patches" / "current"
-DEFAULT_PLAYER_SCRIPT = REPO_ROOT / "install-client-patch.bat"
+DEFAULT_PLAYER_SCRIPT = REPO_ROOT / "WowCult.bat"
 DEFAULT_ADDON_SOURCE_DIR = REPO_ROOT / "addons"
 
 PATCH_NAME = "patch-Z.MPQ"
@@ -481,8 +481,10 @@ ping -n 2 127.0.0.1 >NUL
 cls
 exit /b 0
 """
-    with (release_dir / "install-client-patch.bat").open("w", encoding="utf-8", newline="\n") as handle:
-        handle.write(installer)
+    bootstrap_path = REPO_ROOT / "WowCult.bat"
+    player_bootstrap = bootstrap_path.read_text(encoding="utf-8") if bootstrap_path.exists() else installer
+    (release_dir / "WowCult.bat").write_text(player_bootstrap, encoding="utf-8", newline="\n")
+    (release_dir / "install-client-patch.bat").write_text(player_bootstrap, encoding="utf-8", newline="\n")
 
     rows = ["archive_path\tsource_repo_path\tbytes\tsha256\tgroup"]
     for entry in manifest["expected_archive_files"]:
@@ -504,7 +506,7 @@ exit /b 0
 
 def publish_current(release_dir: Path, current_dir: Path, player_script: Path) -> None:
     current_dir.mkdir(parents=True, exist_ok=True)
-    for name in [PATCH_NAME, "manifest.json", "required-files.tsv", "install-client-patch.bat"]:
+    for name in [PATCH_NAME, "manifest.json", "required-files.tsv", "WowCult.bat", "install-client-patch.bat"]:
         source = release_dir / name
         if source.exists():
             shutil.copy2(source, current_dir / name)
@@ -514,7 +516,8 @@ def publish_current(release_dir: Path, current_dir: Path, player_script: Path) -
         if dst_addons.exists():
             shutil.rmtree(dst_addons)
         shutil.copytree(src_addons, dst_addons)
-    shutil.copy2(release_dir / "install-client-patch.bat", player_script)
+    shutil.copy2(release_dir / "WowCult.bat", player_script)
+    shutil.copy2(release_dir / "WowCult.bat", REPO_ROOT / "install-client-patch.bat")
 
 
 def run_git_command(args: list[str]) -> str:
@@ -529,8 +532,8 @@ def run_git_command(args: list[str]) -> str:
 
 
 def git_sync_publish_current(manifest: dict, label: str) -> None:
-    run_git_command(["add", "addons", "patches/current", "install-client-patch.bat", "Play-TheCult.bat", "Play-TheCult.ps1"])
-    status = run_git_command(["status", "--porcelain", "--", "addons", "patches/current", "install-client-patch.bat", "Play-TheCult.bat", "Play-TheCult.ps1"])
+    run_git_command(["add", "addons", "patches/current", "WowCult.bat", "WowCult.ps1", "install-client-patch.bat", "Play-TheCult.bat", "Play-TheCult.ps1"])
+    status = run_git_command(["status", "--porcelain", "--", "addons", "patches/current", "WowCult.bat", "WowCult.ps1", "install-client-patch.bat", "Play-TheCult.bat", "Play-TheCult.ps1"])
     if not status:
         print("git_publish=no_changes")
         return
@@ -639,7 +642,7 @@ def main() -> int:
             "download_base_url": download_base_url or None,
             "notes": [
                 "Close WoW before installing.",
-                "Players only need install-client-patch.bat; it downloads patch-Z.MPQ from the repo.",
+                "Players only need WowCult.bat; it downloads and verifies patch-Z.MPQ from the repo.",
                 "Delete WDB if cached item/spell text looks stale.",
             ],
         },

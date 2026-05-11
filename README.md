@@ -35,32 +35,26 @@ This refreshes the stable repo payload:
 - `manifest.json`
 - `required-files.tsv`
 
-It also writes a root `install-client-patch.bat`. Players only need to
-download that one script; it fetches the current MPQ from the repo, verifies the
-hash, and installs it into the detected WoW `Data` folder.
+It also writes the root `WowCult.bat`. Players only need that one script. It
+fetches the current launcher from the repo, verifies and installs the current
+MPQ into the detected WoW `Data` folder, refreshes addons, sets the realm config,
+creates the ongoing launcher inside the WoW folder, and starts the game.
 
 Player download URL after pushing `master`:
 
 ```text
-https://raw.githubusercontent.com/fogennnnn/The-Cult/master/install-client-patch.bat
+https://raw.githubusercontent.com/fogennnnn/The-Cult/master/WowCult.bat
 ```
 
-Daily launcher URL:
-
-```text
-https://raw.githubusercontent.com/fogennnnn/The-Cult/master/Play-TheCult.bat
-```
-
-`Play-TheCult.bat` is the preferred shortcut for players. It refreshes the
-launcher script, checks `patches/current/manifest.json`, installs `patch-Z.MPQ`
-only when the remote hash changes, refreshes the bundled addons, clears WDB
-after patch changes, repairs `realmlist.wtf`/`Config.wtf`, asks for a saved
-login if one is missing, and starts `WoW.exe`.
+`WowCult.bat` is both installer and launcher. First run asks for the WoW folder
+if auto-detect fails, asks for account/password if no saved login exists, writes
+`WowCult.bat` into the WoW folder, creates shortcuts with the `WoW.exe` icon, and
+launches. Later runs use the same script to update/check patch files and launch.
 
 Optional account-name prefill:
 
 ```powershell
-.\Play-TheCult.bat -AccountName "myaccount"
+.\WowCult.bat -AccountName "myaccount"
 ```
 
 This writes only `SET accountName` to `WTF\Config.wtf`. It does not store a
@@ -69,7 +63,7 @@ password.
 Optional saved login setup:
 
 ```powershell
-.\Play-TheCult.bat -SetupLogin
+.\WowCult.bat -SetupLogin
 ```
 
 The launcher stores the password with Windows user encryption under
@@ -77,7 +71,7 @@ The launcher stores the password with Windows user encryption under
 launches WoW and submits the saved password quickly. If a client does not focus the
 password field after `SET accountName`, launch with `-TypeAccountOnLogin` once.
 
-Setup mode also writes `Play-TheCult.bat` into the WoW client folder and creates
+Setup mode also writes `WowCult.bat` into the WoW client folder and creates
 shortcuts with the `WoW.exe` icon on the desktop, in the Start menu, and in the
 current user's taskbar pinned-shortcut folder. Modern Windows may still require
 the user to approve/refresh the actual taskbar pin, but the shortcut file is
@@ -86,11 +80,11 @@ created in the standard pinned location.
 To patch without being prompted for login setup:
 
 ```powershell
-.\Play-TheCult.bat -NoLoginSetup
+.\WowCult.bat -NoLoginSetup
 ```
 
 Forget the saved login:
 
 ```powershell
-.\Play-TheCult.bat -ForgetLogin
+.\WowCult.bat -ForgetLogin
 ```

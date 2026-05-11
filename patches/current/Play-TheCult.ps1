@@ -412,10 +412,10 @@ function Get-LauncherBootstrapContent {
 @echo off
 setlocal EnableExtensions
 
-set "LAUNCHER_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/Play-TheCult.ps1"
-set "LAUNCHER_API=https://api.github.com/repos/fogennnnn/The-Cult/contents/patches/current/Play-TheCult.ps1?ref=master"
+set "LAUNCHER_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/WowCult.ps1"
+set "LAUNCHER_API=https://api.github.com/repos/fogennnnn/The-Cult/contents/patches/current/WowCult.ps1?ref=master"
 set "LAUNCHER_DIR=%LOCALAPPDATA%\TheCult"
-set "LAUNCHER=%LAUNCHER_DIR%\Play-TheCult.ps1"
+set "LAUNCHER=%LAUNCHER_DIR%\WowCult.ps1"
 set "LAUNCHER_FETCH=%LAUNCHER_URL%?v=%RANDOM%%RANDOM%"
 
 if not exist "%LAUNCHER_DIR%" mkdir "%LAUNCHER_DIR%" >NUL 2>NUL
@@ -447,14 +447,14 @@ function New-PlayShortcut([string]$ShortcutPath, [string]$TargetPath, [string]$R
   $shortcut.TargetPath = $TargetPath
   $shortcut.WorkingDirectory = $Root
   $shortcut.IconLocation = "$IconPath,0"
-  $shortcut.Description = "The Cult auto-updating WoW launcher"
+  $shortcut.Description = "WowCult auto-updating WoW launcher"
   $shortcut.Save()
 }
 
 function Install-PlayShortcut([string]$Root) {
   $state = Get-StateDir
-  $localBootstrap = Join-Path $state "Play-TheCult.bat"
-  $clientBootstrap = Join-Path $Root "Play-TheCult.bat"
+  $localBootstrap = Join-Path $state "WowCult.bat"
+  $clientBootstrap = Join-Path $Root "WowCult.bat"
   $bootstrapContent = Get-LauncherBootstrapContent
   Set-Content -LiteralPath $localBootstrap -Encoding ASCII -Value $bootstrapContent
   Set-Content -LiteralPath $clientBootstrap -Encoding ASCII -Value $bootstrapContent
@@ -462,9 +462,9 @@ function Install-PlayShortcut([string]$Root) {
   $wow = Join-Path $Root "WoW.exe"
   if (-not (Test-Path -LiteralPath $wow)) { $wow = Join-Path $Root "Wow.exe" }
 
-  $desktopShortcut = Join-Path ([Environment]::GetFolderPath("Desktop")) "The Cult.lnk"
-  $startShortcut = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\The Cult.lnk"
-  $taskbarShortcut = Join-Path $env:APPDATA "Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\The Cult.lnk"
+  $desktopShortcut = Join-Path ([Environment]::GetFolderPath("Desktop")) "WowCult.lnk"
+  $startShortcut = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\WowCult.lnk"
+  $taskbarShortcut = Join-Path $env:APPDATA "Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\WowCult.lnk"
 
   New-PlayShortcut -ShortcutPath $desktopShortcut -TargetPath $clientBootstrap -Root $Root -IconPath $wow
   New-PlayShortcut -ShortcutPath $startShortcut -TargetPath $clientBootstrap -Root $Root -IconPath $wow
@@ -558,7 +558,7 @@ if (-not $effectiveAccountName -and $login -and $login.AccountName) {
 Repair-ClientConfig -Root $client -LoginAccountName $effectiveAccountName
 Ensure-CurrentPatch -Root $client
 
-if ($InstallShortcut -or $SetupLogin -or $loginCreatedThisRun) {
+if ($InstallShortcut -or $SetupLogin -or $loginCreatedThisRun -or -not $NoLaunch) {
   Install-PlayShortcut -Root $client
 }
 
@@ -577,3 +577,5 @@ $process = Start-Process -FilePath $wow -WorkingDirectory $client -PassThru
 if ($login) {
   Invoke-WowAutoLogin -Login $login
 }
+
+
