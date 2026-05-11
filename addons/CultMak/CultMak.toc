@@ -1,0 +1,4 @@
+## Interface: 11200
+## Title: CultMak
+## Notes: Adds /mak for Mak duel challenges.
+CultMak.lua

@@ -9,6 +9,10 @@ set "PATCH_NAME=patch-Z.MPQ"
 set "ADDON_NAME=CultRedeem"
 set "ADDON_TOC_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/addons/CultRedeem/CultRedeem.toc"
 set "ADDON_LUA_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/addons/CultRedeem/CultRedeem.lua"
+set "MAK_ADDON_NAME=CultMak"
+set "MAK_ADDON_TOC_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/addons/CultMak/CultMak.toc"
+set "MAK_ADDON_LUA_URL=https://raw.githubusercontent.com/fogennnnn/The-Cult/master/patches/current/addons/CultMak/CultMak.lua"
+set "RETRY_COUNT=5"
 
 call :ShowIntro
 echo VMaNGOS one-file client patch installer
@@ -87,15 +91,14 @@ set "PATCH=%WORK%\%PATCH_NAME%"
 set "MANIFEST=%WORK%\manifest.json"
 
 echo Downloading current patch from repo...
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri $env:PATCH_URL -OutFile $env:PATCH -UseBasicParsing; if ($env:MANIFEST_URL) { Invoke-WebRequest -Uri $env:MANIFEST_URL -OutFile $env:MANIFEST -UseBasicParsing }"
+call :DownloadFile "%PATCH_URL%" "%PATCH%" "%PATCH_NAME%"
 if errorlevel 1 (
-    echo ERROR: Download failed.
-    echo Tips:
-    echo   - Check your internet connection.
-    echo   - If Windows blocks the script, right-click it, open Properties, and Unblock it.
-    echo   - If the repo moved, download the newest installer .bat from the server.
+    echo ERROR: Patch download failed after retries.
     pause
     exit /b 1
+)
+if not "%MANIFEST_URL%"=="" (
+    call :DownloadFile "%MANIFEST_URL%" "%MANIFEST%" "manifest.json"
 )
 
 for /f "usebackq tokens=*" %%H in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "(Get-FileHash -Algorithm SHA256 -LiteralPath $env:PATCH).Hash.ToUpperInvariant()"`) do set "ACTUAL_SHA256=%%H"
@@ -104,6 +107,14 @@ if not "%ACTUAL_SHA256%"=="%PATCH_SHA256%" (
     echo Expected: %PATCH_SHA256%
     echo Actual:   %ACTUAL_SHA256%
     echo The download may be incomplete or the repo file may not match this installer.
+    pause
+    exit /b 1
+)
+for %%F in ("%PATCH%") do set "ACTUAL_BYTES=%%~zF"
+if not "%ACTUAL_BYTES%"=="%PATCH_BYTES%" (
+    echo ERROR: Downloaded patch size did not match.
+    echo Expected bytes: %PATCH_BYTES%
+    echo Actual bytes:   %ACTUAL_BYTES%
     pause
     exit /b 1
 )
@@ -132,6 +143,14 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
+for /f "usebackq tokens=*" %%H in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "(Get-FileHash -Algorithm SHA256 -LiteralPath $env:DST).Hash.ToUpperInvariant()"`) do set "INSTALLED_SHA256=%%H"
+if not "%INSTALLED_SHA256%"=="%PATCH_SHA256%" (
+    echo ERROR: Installed %PATCH_NAME% hash did not match expected after copy.
+    echo Expected:  %PATCH_SHA256%
+    echo Installed: %INSTALLED_SHA256%
+    pause
+    exit /b 1
+)
 
 echo Installed %PATCH_NAME%.
 echo.
@@ -148,13 +167,66 @@ if errorlevel 1 (
     goto Finish
 )
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri $env:ADDON_TOC_URL -OutFile ($env:ADDONDIR + '\CultRedeem.toc') -UseBasicParsing; Invoke-WebRequest -Uri $env:ADDON_LUA_URL -OutFile ($env:ADDONDIR + '\CultRedeem.lua') -UseBasicParsing"
+call :DownloadFile "%ADDON_TOC_URL%" "%ADDONDIR%\CultRedeem.toc" "CultRedeem.toc"
 if errorlevel 1 (
-    echo WARNING: Addon download failed. Patch is installed, but addon was skipped.
-    echo You can re-run later or install addon manually into Interface\AddOns\%ADDON_NAME%.
-    goto Finish
+    echo ERROR: Addon file download failed: CultRedeem.toc
+    pause
+    exit /b 1
+)
+call :DownloadFile "%ADDON_LUA_URL%" "%ADDONDIR%\CultRedeem.lua" "CultRedeem.lua"
+if errorlevel 1 (
+    echo ERROR: Addon file download failed: CultRedeem.lua
+    pause
+    exit /b 1
+)
+for %%F in ("%ADDONDIR%\CultRedeem.toc" "%ADDONDIR%\CultRedeem.lua") do (
+    if not exist "%%~fF" (
+        echo ERROR: Missing addon file: %%~fF
+        pause
+        exit /b 1
+    )
+    if %%~zF LEQ 0 (
+        echo ERROR: Empty addon file: %%~fF
+        pause
+        exit /b 1
+    )
 )
 echo Installed addon: %ADDON_NAME%
+
+echo Installing player addon %MAK_ADDON_NAME%...
+set "MAKADDONDIR=%WOWROOT%\Interface\AddOns\%MAK_ADDON_NAME%"
+if not exist "%MAKADDONDIR%" mkdir "%MAKADDONDIR%" >NUL 2>NUL
+if errorlevel 1 (
+    echo WARNING: Could not create addon folder:
+    echo   %MAKADDONDIR%
+    goto Finish
+)
+
+call :DownloadFile "%MAK_ADDON_TOC_URL%" "%MAKADDONDIR%\CultMak.toc" "CultMak.toc"
+if errorlevel 1 (
+    echo ERROR: Addon file download failed: CultMak.toc
+    pause
+    exit /b 1
+)
+call :DownloadFile "%MAK_ADDON_LUA_URL%" "%MAKADDONDIR%\CultMak.lua" "CultMak.lua"
+if errorlevel 1 (
+    echo ERROR: Addon file download failed: CultMak.lua
+    pause
+    exit /b 1
+)
+for %%F in ("%MAKADDONDIR%\CultMak.toc" "%MAKADDONDIR%\CultMak.lua") do (
+    if not exist "%%~fF" (
+        echo ERROR: Missing addon file: %%~fF
+        pause
+        exit /b 1
+    )
+    if %%~zF LEQ 0 (
+        echo ERROR: Empty addon file: %%~fF
+        pause
+        exit /b 1
+    )
+)
+echo Installed addon: %MAK_ADDON_NAME%
 
 :Finish
 echo.
@@ -180,6 +252,32 @@ if not exist "!BAK!" exit /b 0
 set /a BAKNUM+=1
 set "BAK=%~1\patch-Z.before-!BAKNUM!.MPQ"
 goto BackupNameLoop
+
+:DownloadFile
+set "DL_URL=%~1"
+set "DL_OUT=%~2"
+set "DL_LABEL=%~3"
+if "%DL_URL%"=="" (
+    echo ERROR: Empty download URL for %DL_LABEL%.
+    exit /b 1
+)
+set /a DL_TRY=0
+:DownloadRetry
+set /a DL_TRY+=1
+echo Downloading %DL_LABEL% ^(attempt !DL_TRY!/%RETRY_COUNT%^)...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri $env:DL_URL -OutFile $env:DL_OUT -UseBasicParsing"
+if not errorlevel 1 (
+    if exist "%DL_OUT%" (
+        for %%F in ("%DL_OUT%") do if %%~zF GTR 0 exit /b 0
+    )
+)
+if !DL_TRY! LSS %RETRY_COUNT% (
+    ping -n 2 127.0.0.1 >NUL
+    goto DownloadRetry
+)
+echo ERROR: Failed to download %DL_LABEL% from:
+echo   %DL_URL%
+exit /b 1
 
 :ShowIntro
 cls

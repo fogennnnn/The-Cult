@@ -1,7 +1,8 @@
 ## Interface: 11200
-## Title: CultHEMO
-## Notes: Lightweight HEMO mirror status panel for The Cult
+## Title: HEMOGold
+## Notes: Lightweight HEMOGold mirror status panel for The Cult
 ## Author: The Cult
 ## Version: 2.0.0
+## SavedVariables: CultRedeem_DB
 ## SavedVariablesPerCharacter: CultRedeem_Char
 CultRedeem.lua

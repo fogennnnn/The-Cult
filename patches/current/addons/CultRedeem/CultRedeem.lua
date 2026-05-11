@@ -1,4 +1,4 @@
-local ADDON_TAG = "|cff8ad3ff[CultHEMO]|r "
+local ADDON_TAG = "|cff8ad3ff[HEMOGold]|r "
 
 if not CultRedeem_Char then
   CultRedeem_Char = {}
@@ -74,7 +74,7 @@ end
 
 local panel = CreateFrame("Frame", "CultHemoPanel", UIParent)
 panel:SetWidth(360)
-panel:SetHeight(214)
+panel:SetHeight(176)
 panel:SetMovable(true)
 panel:EnableMouse(true)
 panel:RegisterForDrag("LeftButton")
@@ -98,7 +98,7 @@ end)
 
 local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 title:SetPoint("TOPLEFT", panel, "TOPLEFT", 14, -14)
-title:SetText("Cult HEMO Mirror")
+title:SetText("HEMOGold")
 
 local closeBtn = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
 closeBtn:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -4, -4)
@@ -107,7 +107,7 @@ local hint = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 hint:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
 hint:SetJustifyH("LEFT")
 hint:SetWidth(320)
-hint:SetText("Live view from your account estimate. Drag window to move.")
+hint:SetText("Account mirror status.")
 
 local lineGold = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 lineGold:SetPoint("TOPLEFT", hint, "BOTTOMLEFT", 0, -16)
@@ -125,19 +125,19 @@ local lineMirror = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
 lineMirror:SetPoint("TOPLEFT", lineDelta, "BOTTOMLEFT", 0, -10)
 lineMirror:SetWidth(330)
 lineMirror:SetJustifyH("LEFT")
-lineMirror:SetText("Server mirror: account gold -> HEMO, continuous reconcile.")
+lineMirror:SetText("Commands: /hemo   /hemostat")
 
 local lineInterval = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 lineInterval:SetPoint("TOPLEFT", lineMirror, "BOTTOMLEFT", 0, -8)
 lineInterval:SetWidth(330)
 lineInterval:SetJustifyH("LEFT")
-lineInterval:SetText("Target latency: a few seconds.")
+lineInterval:SetText("")
 
 local lineCmd = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 lineCmd:SetPoint("TOPLEFT", lineInterval, "BOTTOMLEFT", 0, -8)
 lineCmd:SetWidth(330)
 lineCmd:SetJustifyH("LEFT")
-lineCmd:SetText("/hemo toggle panel   /hemostat chat snapshot")
+lineCmd:SetText("")
 
 local state = {
   lastMoney = 0,
@@ -221,9 +221,7 @@ SlashCmdList["CULTHEMOSTAT"] = function()
   updateCharSnapshot(money)
   local accountMoney = accountMoneyEstimate()
   msg("Gold now (char): " .. moneyText(money), 0.7, 1.0, 0.8)
-  msg("Gold now (acct est): " .. moneyText(accountMoney), 0.7, 1.0, 0.8)
   msg(string.format("HEMO (acct est): %.2f", accountMoney / 10000), 0.7, 1.0, 0.8)
-  msg("Server mirror runs continuously and reconciles account balance.", 0.7, 1.0, 0.8)
 end
 
 SLASH_CULTREDEEM1 = "/redeem"
@@ -232,3 +230,63 @@ SlashCmdList["CULTREDEEM"] = function()
 end
 
 msg("Loaded. /hemo to toggle panel.", 0.5, 0.9, 0.5)
+
+-- Tooltip safety net:
+-- Some UI stacks can append duplicate stat lines repeatedly while hovering.
+-- Keep one copy of each numeric stat line so item tooltips remain readable.
+local function isNumericStatLine(text)
+  if not text then
+    return false
+  end
+  return string.find(text, "^[%+%-]%d+%s") ~= nil
+end
+
+local function sanitizeTooltip(tooltip)
+  if not tooltip or not tooltip:IsVisible() then
+    return
+  end
+  local tipName = tooltip:GetName()
+  if not tipName then
+    return
+  end
+  local lineCount = tooltip:NumLines() or 0
+  if lineCount < 3 then
+    return
+  end
+
+  local seen = {}
+  local changed = false
+  for i = 2, lineCount do
+    local globalName = tipName .. "TextLeft" .. i
+    local left = getglobal(globalName)
+    if left and left:IsVisible() then
+      local text = left:GetText()
+      if text and text ~= "" and isNumericStatLine(text) then
+        if seen[text] then
+          left:SetText("")
+          left:Hide()
+          changed = true
+        else
+          seen[text] = true
+        end
+      end
+    end
+  end
+  if changed then
+    tooltip:Show()
+  end
+end
+
+local tooltipFixTicker = CreateFrame("Frame")
+tooltipFixTicker:SetScript("OnUpdate", function()
+  local elapsed = arg1 or 0
+  CultRedeem_Char._tooltipPulse = (CultRedeem_Char._tooltipPulse or 0) + elapsed
+  if CultRedeem_Char._tooltipPulse < 0.08 then
+    return
+  end
+  CultRedeem_Char._tooltipPulse = 0
+  sanitizeTooltip(GameTooltip)
+  sanitizeTooltip(ItemRefTooltip)
+  sanitizeTooltip(ShoppingTooltip1)
+  sanitizeTooltip(ShoppingTooltip2)
+end)

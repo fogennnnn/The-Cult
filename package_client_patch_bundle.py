@@ -31,6 +31,10 @@ DEFAULT_ADDON_SOURCE_DIR = REPO_ROOT / "addons"
 PATCH_NAME = "patch-Z.MPQ"
 PLAYER_ADDON_NAME = "CultRedeem"
 PLAYER_ADDON_FILES = ["CultRedeem.toc", "CultRedeem.lua"]
+PLAYER_ADDONS = {
+    "CultRedeem": ["CultRedeem.toc", "CultRedeem.lua"],
+    "CultMak": ["CultMak.toc", "CultMak.lua"],
+}
 
 BASE_ARCHIVE_FILES = [
     ("Spell.patched.dbc", "DBFilesClient\\Spell.dbc"),
@@ -158,9 +162,12 @@ def write_text_files(release_dir: Path, patch_file: Path, manifest: dict, downlo
     patch_bytes = manifest["patch"]["bytes"]
     patch_url = f"{download_base_url.rstrip('/')}/{PATCH_NAME}" if download_base_url else ""
     manifest_url = f"{download_base_url.rstrip('/')}/manifest.json" if download_base_url else ""
-    addon_base_url = f"{download_base_url.rstrip('/')}/addons/{PLAYER_ADDON_NAME}" if download_base_url else ""
+    addon_base_url = f"{download_base_url.rstrip('/')}/addons/CultRedeem" if download_base_url else ""
     addon_toc_url = f"{addon_base_url}/CultRedeem.toc" if addon_base_url else ""
     addon_lua_url = f"{addon_base_url}/CultRedeem.lua" if addon_base_url else ""
+    mak_addon_base_url = f"{download_base_url.rstrip('/')}/addons/CultMak" if download_base_url else ""
+    mak_addon_toc_url = f"{mak_addon_base_url}/CultMak.toc" if mak_addon_base_url else ""
+    mak_addon_lua_url = f"{mak_addon_base_url}/CultMak.lua" if mak_addon_base_url else ""
 
     installer = f"""@echo off
 setlocal EnableExtensions EnableDelayedExpansion
@@ -173,6 +180,10 @@ set "PATCH_NAME={PATCH_NAME}"
 set "ADDON_NAME={PLAYER_ADDON_NAME}"
 set "ADDON_TOC_URL={addon_toc_url}"
 set "ADDON_LUA_URL={addon_lua_url}"
+set "MAK_ADDON_NAME=CultMak"
+set "MAK_ADDON_TOC_URL={mak_addon_toc_url}"
+set "MAK_ADDON_LUA_URL={mak_addon_lua_url}"
+set "RETRY_COUNT=5"
 
 call :ShowIntro
 echo VMaNGOS one-file client patch installer
@@ -251,15 +262,14 @@ set "PATCH=%WORK%\\%PATCH_NAME%"
 set "MANIFEST=%WORK%\\manifest.json"
 
 echo Downloading current patch from repo...
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri $env:PATCH_URL -OutFile $env:PATCH -UseBasicParsing; if ($env:MANIFEST_URL) {{ Invoke-WebRequest -Uri $env:MANIFEST_URL -OutFile $env:MANIFEST -UseBasicParsing }}"
+call :DownloadFile "%PATCH_URL%" "%PATCH%" "%PATCH_NAME%"
 if errorlevel 1 (
-    echo ERROR: Download failed.
-    echo Tips:
-    echo   - Check your internet connection.
-    echo   - If Windows blocks the script, right-click it, open Properties, and Unblock it.
-    echo   - If the repo moved, download the newest installer .bat from the server.
+    echo ERROR: Patch download failed after retries.
     pause
     exit /b 1
+)
+if not "%MANIFEST_URL%"=="" (
+    call :DownloadFile "%MANIFEST_URL%" "%MANIFEST%" "manifest.json"
 )
 
 for /f "usebackq tokens=*" %%H in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "(Get-FileHash -Algorithm SHA256 -LiteralPath $env:PATCH).Hash.ToUpperInvariant()"`) do set "ACTUAL_SHA256=%%H"
@@ -268,6 +278,14 @@ if not "%ACTUAL_SHA256%"=="%PATCH_SHA256%" (
     echo Expected: %PATCH_SHA256%
     echo Actual:   %ACTUAL_SHA256%
     echo The download may be incomplete or the repo file may not match this installer.
+    pause
+    exit /b 1
+)
+for %%F in ("%PATCH%") do set "ACTUAL_BYTES=%%~zF"
+if not "%ACTUAL_BYTES%"=="%PATCH_BYTES%" (
+    echo ERROR: Downloaded patch size did not match.
+    echo Expected bytes: %PATCH_BYTES%
+    echo Actual bytes:   %ACTUAL_BYTES%
     pause
     exit /b 1
 )
@@ -296,6 +314,14 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
+for /f "usebackq tokens=*" %%H in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "(Get-FileHash -Algorithm SHA256 -LiteralPath $env:DST).Hash.ToUpperInvariant()"`) do set "INSTALLED_SHA256=%%H"
+if not "%INSTALLED_SHA256%"=="%PATCH_SHA256%" (
+    echo ERROR: Installed %PATCH_NAME% hash did not match expected after copy.
+    echo Expected:  %PATCH_SHA256%
+    echo Installed: %INSTALLED_SHA256%
+    pause
+    exit /b 1
+)
 
 echo Installed %PATCH_NAME%.
 echo.
@@ -312,13 +338,66 @@ if errorlevel 1 (
     goto Finish
 )
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri $env:ADDON_TOC_URL -OutFile ($env:ADDONDIR + '\\CultRedeem.toc') -UseBasicParsing; Invoke-WebRequest -Uri $env:ADDON_LUA_URL -OutFile ($env:ADDONDIR + '\\CultRedeem.lua') -UseBasicParsing"
+call :DownloadFile "%ADDON_TOC_URL%" "%ADDONDIR%\CultRedeem.toc" "CultRedeem.toc"
 if errorlevel 1 (
-    echo WARNING: Addon download failed. Patch is installed, but addon was skipped.
-    echo You can re-run later or install addon manually into Interface\AddOns\%ADDON_NAME%.
-    goto Finish
+    echo ERROR: Addon file download failed: CultRedeem.toc
+    pause
+    exit /b 1
+)
+call :DownloadFile "%ADDON_LUA_URL%" "%ADDONDIR%\CultRedeem.lua" "CultRedeem.lua"
+if errorlevel 1 (
+    echo ERROR: Addon file download failed: CultRedeem.lua
+    pause
+    exit /b 1
+)
+for %%F in ("%ADDONDIR%\CultRedeem.toc" "%ADDONDIR%\CultRedeem.lua") do (
+    if not exist "%%~fF" (
+        echo ERROR: Missing addon file: %%~fF
+        pause
+        exit /b 1
+    )
+    if %%~zF LEQ 0 (
+        echo ERROR: Empty addon file: %%~fF
+        pause
+        exit /b 1
+    )
 )
 echo Installed addon: %ADDON_NAME%
+
+echo Installing player addon %MAK_ADDON_NAME%...
+set "MAKADDONDIR=%WOWROOT%\Interface\AddOns\%MAK_ADDON_NAME%"
+if not exist "%MAKADDONDIR%" mkdir "%MAKADDONDIR%" >NUL 2>NUL
+if errorlevel 1 (
+    echo WARNING: Could not create addon folder:
+    echo   %MAKADDONDIR%
+    goto Finish
+)
+
+call :DownloadFile "%MAK_ADDON_TOC_URL%" "%MAKADDONDIR%\CultMak.toc" "CultMak.toc"
+if errorlevel 1 (
+    echo ERROR: Addon file download failed: CultMak.toc
+    pause
+    exit /b 1
+)
+call :DownloadFile "%MAK_ADDON_LUA_URL%" "%MAKADDONDIR%\CultMak.lua" "CultMak.lua"
+if errorlevel 1 (
+    echo ERROR: Addon file download failed: CultMak.lua
+    pause
+    exit /b 1
+)
+for %%F in ("%MAKADDONDIR%\CultMak.toc" "%MAKADDONDIR%\CultMak.lua") do (
+    if not exist "%%~fF" (
+        echo ERROR: Missing addon file: %%~fF
+        pause
+        exit /b 1
+    )
+    if %%~zF LEQ 0 (
+        echo ERROR: Empty addon file: %%~fF
+        pause
+        exit /b 1
+    )
+)
+echo Installed addon: %MAK_ADDON_NAME%
 
 :Finish
 echo.
@@ -344,6 +423,32 @@ if not exist "!BAK!" exit /b 0
 set /a BAKNUM+=1
 set "BAK=%~1\\patch-Z.before-!BAKNUM!.MPQ"
 goto BackupNameLoop
+
+:DownloadFile
+set "DL_URL=%~1"
+set "DL_OUT=%~2"
+set "DL_LABEL=%~3"
+if "%DL_URL%"=="" (
+    echo ERROR: Empty download URL for %DL_LABEL%.
+    exit /b 1
+)
+set /a DL_TRY=0
+:DownloadRetry
+set /a DL_TRY+=1
+echo Downloading %DL_LABEL% ^(attempt !DL_TRY!/%RETRY_COUNT%^)...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri $env:DL_URL -OutFile $env:DL_OUT -UseBasicParsing"
+if not errorlevel 1 (
+    if exist "%DL_OUT%" (
+        for %%F in ("%DL_OUT%") do if %%~zF GTR 0 exit /b 0
+    )
+)
+if !DL_TRY! LSS %RETRY_COUNT% (
+    ping -n 2 127.0.0.1 >NUL
+    goto DownloadRetry
+)
+echo ERROR: Failed to download %DL_LABEL% from:
+echo   %DL_URL%
+exit /b 1
 
 :ShowIntro
 cls
@@ -376,7 +481,7 @@ ping -n 2 127.0.0.1 >NUL
 cls
 exit /b 0
 """
-    with (release_dir / "install-client-patch.bat").open("w", encoding="utf-8", newline="\r\n") as handle:
+    with (release_dir / "install-client-patch.bat").open("w", encoding="utf-8", newline="\n") as handle:
         handle.write(installer)
 
     rows = ["archive_path\tsource_repo_path\tbytes\tsha256\tgroup"]
@@ -424,8 +529,8 @@ def run_git_command(args: list[str]) -> str:
 
 
 def git_sync_publish_current(manifest: dict, label: str) -> None:
-    run_git_command(["add", "patches/current", "install-client-patch.bat"])
-    status = run_git_command(["status", "--porcelain", "--", "patches/current", "install-client-patch.bat"])
+    run_git_command(["add", "addons", "patches/current", "install-client-patch.bat"])
+    status = run_git_command(["status", "--porcelain", "--", "addons", "patches/current", "install-client-patch.bat"])
     if not status:
         print("git_publish=no_changes")
         return
@@ -439,20 +544,23 @@ def git_sync_publish_current(manifest: dict, label: str) -> None:
     print(f"git_publish=ok branch={branch} commit_message={message}")
 
 
-def stage_player_addon(addon_source_dir: Path, release_dir: Path) -> list[str]:
-    source_dir = addon_source_dir / PLAYER_ADDON_NAME
-    if not source_dir.exists():
-        raise FileNotFoundError(source_dir)
-    destination = release_dir / "addons" / PLAYER_ADDON_NAME
-    destination.mkdir(parents=True, exist_ok=True)
-    copied: list[str] = []
-    for file_name in PLAYER_ADDON_FILES:
-        src = source_dir / file_name
-        if not src.exists():
-            raise FileNotFoundError(src)
-        shutil.copy2(src, destination / file_name)
-        copied.append(str((destination / file_name).relative_to(release_dir)).replace("\\", "/"))
-    return copied
+def stage_player_addons(addon_source_dir: Path, release_dir: Path) -> dict[str, list[str]]:
+    staged: dict[str, list[str]] = {}
+    for addon_name, addon_files in PLAYER_ADDONS.items():
+        source_dir = addon_source_dir / addon_name
+        if not source_dir.exists():
+            raise FileNotFoundError(source_dir)
+        destination = release_dir / "addons" / addon_name
+        destination.mkdir(parents=True, exist_ok=True)
+        copied: list[str] = []
+        for file_name in addon_files:
+            src = source_dir / file_name
+            if not src.exists():
+                raise FileNotFoundError(src)
+            shutil.copy2(src, destination / file_name)
+            copied.append(str((destination / file_name).relative_to(release_dir)).replace("\\", "/"))
+        staged[addon_name] = copied
+    return staged
 
 
 def write_zip(release_dir: Path, zip_path: Path) -> None:
@@ -539,11 +647,15 @@ def main() -> int:
     }
 
     write_text_files(release_dir, patch_file, manifest, download_base_url)
-    addon_files = stage_player_addon(addon_source_dir, release_dir)
+    staged_addons = stage_player_addons(addon_source_dir, release_dir)
     manifest["player_addon"] = {
         "name": PLAYER_ADDON_NAME,
-        "files": addon_files,
+        "files": staged_addons[PLAYER_ADDON_NAME],
     }
+    manifest["player_addons"] = [
+        {"name": addon_name, "files": files}
+        for addon_name, files in staged_addons.items()
+    ]
     (release_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     if args.publish_current:
         publish_current(release_dir, current_dir, player_script)
