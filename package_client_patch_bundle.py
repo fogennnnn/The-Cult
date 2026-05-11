@@ -483,8 +483,10 @@ exit /b 0
 """
     bootstrap_path = REPO_ROOT / "WowCult.bat"
     player_bootstrap = bootstrap_path.read_text(encoding="utf-8") if bootstrap_path.exists() else installer
-    (release_dir / "WowCult.bat").write_text(player_bootstrap, encoding="utf-8", newline="\n")
-    (release_dir / "install-client-patch.bat").write_text(player_bootstrap, encoding="utf-8", newline="\n")
+    with (release_dir / "WowCult.bat").open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(player_bootstrap)
+    with (release_dir / "install-client-patch.bat").open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(player_bootstrap)
 
     rows = ["archive_path\tsource_repo_path\tbytes\tsha256\tgroup"]
     for entry in manifest["expected_archive_files"]:
