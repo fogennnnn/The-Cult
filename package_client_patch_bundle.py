@@ -529,8 +529,8 @@ def run_git_command(args: list[str]) -> str:
 
 
 def git_sync_publish_current(manifest: dict, label: str) -> None:
-    run_git_command(["add", "addons", "patches/current", "install-client-patch.bat"])
-    status = run_git_command(["status", "--porcelain", "--", "addons", "patches/current", "install-client-patch.bat"])
+    run_git_command(["add", "addons", "patches/current", "install-client-patch.bat", "Play-TheCult.bat", "Play-TheCult.ps1"])
+    status = run_git_command(["status", "--porcelain", "--", "addons", "patches/current", "install-client-patch.bat", "Play-TheCult.bat", "Play-TheCult.ps1"])
     if not status:
         print("git_publish=no_changes")
         return

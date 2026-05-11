@@ -44,3 +44,23 @@ Player download URL after pushing `master`:
 ```text
 https://raw.githubusercontent.com/fogennnnn/The-Cult/master/install-client-patch.bat
 ```
+
+Daily launcher URL:
+
+```text
+https://raw.githubusercontent.com/fogennnnn/The-Cult/master/Play-TheCult.bat
+```
+
+`Play-TheCult.bat` is the preferred shortcut for players. It refreshes the
+launcher script, checks `patches/current/manifest.json`, installs `patch-Z.MPQ`
+only when the remote hash changes, refreshes the bundled addons, clears WDB
+after patch changes, repairs `realmlist.wtf`/`Config.wtf`, and starts `WoW.exe`.
+
+Optional account-name prefill:
+
+```powershell
+.\Play-TheCult.bat -AccountName "myaccount"
+```
+
+This writes only `SET accountName` to `WTF\Config.wtf`. It does not store a
+password.
